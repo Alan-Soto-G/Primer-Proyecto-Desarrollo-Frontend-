@@ -3,7 +3,7 @@ export class Tablero {
         this.filas = filas;
         this.columnas = columnas;
         this.matriz = Array.from({ length: filas }, () =>
-            Array.from({ length: columnas }, () => "🌊")
+            Array.from({ length: columnas }, () => "~")
         );
     }
 
@@ -11,75 +11,93 @@ export class Tablero {
         const boardP1 = [];
         const boardM1 = [];
         let cellId = 1;
-
+    
         for (let row = 0; row < size; row++) {
             const rowP1 = [];
             const rowM1 = [];
-
+    
             for (let col = 0; col < size; col++) {
+                // Probabilidad de colocar un barco (ajusta el % según prefieras)
+                const hasShip = false; // No colocar barcos aún
+    
                 const cellP1 = {
                     id: cellId,
-                    status: "ship", // <--- Cambiás aquí para probar cambios
+                    status: hasShip ? "ship" : "~",
                     visible: true,
-                    ship: null,
+                    ship: null, // No asignar ningún barco
                     player: "p1",
                 };
-
+    
                 const cellM1 = {
                     ...JSON.parse(JSON.stringify(cellP1)),
                     player: "p2",
-                    visible: false,
+                    visible: false, // Oculto para el enemigo
                 };
-
+    
                 rowP1.push(cellP1);
                 rowM1.push(cellM1);
                 cellId++;
             }
-
+    
             boardP1.push(rowP1);
             boardM1.push(rowM1);
         }
-
+    
         return { boardP1, boardM1 };
     }
 
-    renderBoard(board, containerId, option) {
-        const boardContainer = document.getElementById(containerId);
-        boardContainer.innerHTML = "";
-        const size = board.length;
+    colocarBarco(fila, columna, longitud, horizontal = true) {
+    // Verifica si el barco cabe dentro del tablero
+    if (horizontal && columna + longitud > this.columnas) return false;
+    if (!horizontal && fila + longitud > this.filas) return false;
 
-        boardContainer.style.display = "grid";
-        boardContainer.style.gridTemplateColumns = `repeat(${size}, minmax(25px, 1fr))`;
+    // Verifica si las celdas están libres
+    for (let i = 0; i < longitud; i++) {
+        const f = fila + (horizontal ? 0 : i);
+        const c = columna + (horizontal ? i : 0);
 
-        board.forEach(row => {
-            row.forEach(cell => {
-                let image;
-                switch(cell.status) {
-                    case "w": image = "water.png"; break;
-                    case "ship":
-                        image = cell.visible ? "ship.png" : "water.png";
-                        break;
-                    case "hit": image = "hit.png"; break;
-                    default: image = "missedShot.png";
-                }
-
-                if (option == 2 && cell.player === "p2") {
-                    const button = document.createElement("button");
-                    button.className = "cell";
-                    button.innerHTML = `<img src="../assets/images/${image}" alt="${cell.status}">`;
-                    boardContainer.appendChild(button);
-                } else if (option == 1) {
-                    const imgContainer = document.createElement("div");
-                    imgContainer.className = "cell-image";
-                    imgContainer.innerHTML = `<img src="../assets/images/${image}" alt="${cell.status}">`;
-                    boardContainer.appendChild(imgContainer);
-                } else {
-                    const button = document.createElement("button");
-                    button.className = "cell";
-                    button.innerHTML = `<img src="../assets/images/${image}" alt="${cell.status}">`;
-                    boardContainer.appendChild(button);
-                }
-            });
-        });
+        if (this.matriz[f][c] !== "~" && this.matriz[f][c].status !== "~") return false;
     }
-}
+
+    // Coloca el barco
+    for (let i = 0; i < longitud; i++) {
+        const f = horizontal ? fila : fila + i;
+        const c = horizontal ? columna + i : columna;
+    
+        this.matriz[f][c] = {
+            status: "ship",
+            ship: longitud,
+        };
+    }
+    return true;
+    }
+
+
+    renderBoard(id, playerOption) {
+        const container = document.getElementById(id);
+        container.innerHTML = "";
+        container.style.display = "grid";
+        container.style.gridTemplateColumns = `repeat(${this.columnas}, 30px)`;
+        container.style.gridTemplateRows = `repeat(${this.filas}, 30px)`;
+    
+        for (let i = 0; i < this.filas; i++) {
+            for (let j = 0; j < this.columnas; j++) {
+                const celda = document.createElement("div");
+                celda.classList.add("cell");
+                celda.dataset.fila = i;
+                celda.dataset.columna = j;
+    
+                const valor = this.matriz[i][j]; // Usamos la matriz actualizada
+    
+                if (valor === "~" || valor.status === "~") {
+                    celda.style.backgroundImage = "url('./assets/shot/water.png')";
+                } else if (valor.status === "ship") {
+                    celda.style.backgroundImage = `url('./assets/ship/ship${valor.ship}.png')`;
+                }
+    
+                celda.style.backgroundSize = "cover";
+                container.appendChild(celda);
+            }
+        }
+    }            
+}    

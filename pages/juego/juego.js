@@ -11,27 +11,15 @@ export class Juego {
     }
 
     iniciar() {
-        // Inicializaciones necesarias
         this.barcos = [5, 4, 3, 3, 2, 2];
         this.barcoActual = 0;
         this.horizontal = true;
-    
-        // Generar HTML de tableros
-        this.generarTablero("board-p1", this.tableroUsuario.filas, this.tableroUsuario.columnas, this.tableroUsuario, 0);
-        this.generarTablero("board-m1", this.tableroMaquina.filas, this.tableroMaquina.columnas, this.tableroMaquina, 1);
-    
-        // Agregar eventos
-        this.agregarEventos();
-    }
 
-    generarTablero(id, filas, columnas, tablero, playerOption) {
-        const { boardP1, boardM1 } = tablero.createBoard(filas); // Solo usamos filas (cuadrado)
-        if (playerOption === 1) {
-            tablero.board = boardM1;
-        } else {
-            tablero.board = boardP1;
-        }
-        tablero.renderBoard(tablero.board, id, playerOption); // Render con método propio
+        // Renderizamos directamente los tableros usando su matriz
+        this.tableroUsuario.renderBoard("board-p1", 0);
+        this.tableroMaquina.renderBoard("board-m1", 1);
+
+        this.agregarEventos();
     }
 
     agregarEventos() {
@@ -84,12 +72,13 @@ export class Juego {
 
         if (colocado) {
             console.log(`✅ Barco de ${longitud} colocado en (${fila}, ${columna})`);
+            this.tableroUsuario.renderBoard("board-p1", 0); // 🔄 Actualizamos visual
             this.barcoActual++;
 
             if (this.barcoActual >= this.barcos.length) {
                 console.log("🎯 ¡Todos los barcos colocados! Inicia el juego.");
                 this.colocarBarcosAleatoriamente(this.tableroMaquina);
-                this.mostrarTableros();
+                this.tableroMaquina.renderBoard("board-m1", 1);
             }
         } else {
             console.log("❌ No puedes colocar un barco aquí.");
@@ -101,8 +90,8 @@ export class Juego {
         barcos.forEach(longitud => {
             let colocado = false;
             while (!colocado) {
-                const fila = Math.floor(Math.random() * 10);
-                const columna = Math.floor(Math.random() * 10);
+                const fila = Math.floor(Math.random() * tablero.filas);
+                const columna = Math.floor(Math.random() * tablero.columnas);
                 const horizontal = Math.random() < 0.5;
                 colocado = tablero.colocarBarco(fila, columna, longitud, horizontal);
             }
@@ -113,7 +102,10 @@ export class Juego {
         const tableroObjetivo = this.turnoUsuario ? this.tableroMaquina : this.tableroUsuario;
         const resultado = tableroObjetivo.atacar(fila, columna);
         console.log(`🔹 ${this.turnoUsuario ? "Usuario" : "Máquina"} disparó a (${fila}, ${columna}): ${resultado}`);
-        this.mostrarTableros();
+
+        this.tableroUsuario.renderBoard("board-p1", 0);
+        this.tableroMaquina.renderBoard("board-m1", 1);
+
         this.turnoUsuario = !this.turnoUsuario;
 
         if (!this.turnoUsuario) {
@@ -124,18 +116,11 @@ export class Juego {
     turnoMaquina() {
         let fila, columna;
         do {
-            fila = Math.floor(Math.random() * 10);
-            columna = Math.floor(Math.random() * 10);
+            fila = Math.floor(Math.random() * this.tableroUsuario.filas);
+            columna = Math.floor(Math.random() * this.tableroUsuario.columnas);
         } while (['💥', '❌'].includes(this.tableroUsuario.matriz[fila][columna]));
 
         this.realizarDisparo(fila, columna);
-    }
-
-    mostrarTableros() {
-        console.log("🧊 Tablero del Usuario:");
-        this.tableroUsuario.imprimir();
-        console.log("🤖 Tablero de la Máquina:");
-        this.tableroMaquina.imprimir();
     }
 }
 
