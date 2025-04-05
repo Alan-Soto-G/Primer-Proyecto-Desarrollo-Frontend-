@@ -2,56 +2,84 @@ export class Tablero {
     constructor(filas = 10, columnas = 10) {
         this.filas = filas;
         this.columnas = columnas;
-        this.matriz = Array.from({ length: filas }, () => Array(columnas).fill('a'));
-        this.barcos = [];
+        this.matriz = Array.from({ length: filas }, () =>
+            Array.from({ length: columnas }, () => "🌊")
+        );
     }
 
-    colocarBarco(fila, columna, longitud, horizontal) {
-        if (this.puedeColocarBarco(fila, columna, longitud, horizontal)) {
-            for (let i = 0; i < longitud; i++) {
-                if (horizontal) {
-                    this.matriz[fila][columna + i] = '🚢';
-                } else {
-                    this.matriz[fila + i][columna] = '🚢';
+    createBoard(size) {
+        const boardP1 = [];
+        const boardM1 = [];
+        let cellId = 1;
+
+        for (let row = 0; row < size; row++) {
+            const rowP1 = [];
+            const rowM1 = [];
+
+            for (let col = 0; col < size; col++) {
+                const cellP1 = {
+                    id: cellId,
+                    status: "ship", // <--- Cambiás aquí para probar cambios
+                    visible: true,
+                    ship: null,
+                    player: "p1",
+                };
+
+                const cellM1 = {
+                    ...JSON.parse(JSON.stringify(cellP1)),
+                    player: "p2",
+                    visible: false,
+                };
+
+                rowP1.push(cellP1);
+                rowM1.push(cellM1);
+                cellId++;
+            }
+
+            boardP1.push(rowP1);
+            boardM1.push(rowM1);
+        }
+
+        return { boardP1, boardM1 };
+    }
+
+    renderBoard(board, containerId, option) {
+        const boardContainer = document.getElementById(containerId);
+        boardContainer.innerHTML = "";
+        const size = board.length;
+
+        boardContainer.style.display = "grid";
+        boardContainer.style.gridTemplateColumns = `repeat(${size}, minmax(25px, 1fr))`;
+
+        board.forEach(row => {
+            row.forEach(cell => {
+                let image;
+                switch(cell.status) {
+                    case "w": image = "water.png"; break;
+                    case "ship":
+                        image = cell.visible ? "ship.png" : "water.png";
+                        break;
+                    case "hit": image = "hit.png"; break;
+                    default: image = "missedShot.png";
                 }
-            }
-            return true;
-        }
-        return false;
-    }
 
-    puedeColocarBarco(fila, columna, longitud, horizontal) {
-        for (let i = 0; i < longitud; i++) {
-            let f = horizontal ? fila : fila + i;
-            let c = horizontal ? columna + i : columna;
-
-            if (f >= this.tamaño || c >= this.tamaño || this.matriz[f][c] === '🚢') {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    atacar(fila, columna) {
-        const celda = this.matriz[fila][columna];
-
-        if (celda === 'a') {
-            this.matriz[fila][columna] = 'b'; // Marca agua con bomba fallida
-            return "¡Fallaste!";
-        }
-
-        const barcoImpactado = this.barcos.find(barco => barco.id === celda);
-        if (barcoImpactado) {
-            barcoImpactado.recibirImpacto();
-            this.matriz[fila][columna] = `${celda}-h`; // Marca impacto en barco
-            return barcoImpactado.estaHundido() ? `¡Hundiste un ${barcoImpactado.id}!` : "¡Impacto!";
-        }
-
-        return "Movimiento inválido.";
-    }
-
-    imprimir() {
-        this.matriz.forEach(fila => console.log(fila.join(' ')));
-        console.log('\n');
+                if (option == 2 && cell.player === "p2") {
+                    const button = document.createElement("button");
+                    button.className = "cell";
+                    button.innerHTML = `<img src="../assets/images/${image}" alt="${cell.status}">`;
+                    boardContainer.appendChild(button);
+                } else if (option == 1) {
+                    const imgContainer = document.createElement("div");
+                    imgContainer.className = "cell-image";
+                    imgContainer.innerHTML = `<img src="../assets/images/${image}" alt="${cell.status}">`;
+                    boardContainer.appendChild(imgContainer);
+                } else {
+                    const button = document.createElement("button");
+                    button.className = "cell";
+                    button.innerHTML = `<img src="../assets/images/${image}" alt="${cell.status}">`;
+                    boardContainer.appendChild(button);
+                }
+            });
+        });
     }
 }

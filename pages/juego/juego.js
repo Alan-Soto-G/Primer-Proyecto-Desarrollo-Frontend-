@@ -1,31 +1,37 @@
 import { Tablero } from '../../models/Tablero.js';
 import { Jugador } from '../../models/Jugador.js';
 
-let juego;
-
-export function init() {
-    console.log("✅ Página de juego cargada.");
-    juego = new Juego();
-    juego.iniciar();
-}
-
-class Juego {
-    constructor() {
-        this.tableroUsuario = new Tablero();
-        this.tableroMaquina = new Tablero();
+export class Juego {
+    constructor(filas, columnas) {
+        this.tableroUsuario = new Tablero(filas, columnas);
+        this.tableroMaquina = new Tablero(filas, columnas);
         this.jugador = new Jugador("Usuario");
         this.maquina = new Jugador("Máquina");
         this.turnoUsuario = true;
     }
 
     iniciar() {
-        console.log("🎮 ¡El juego ha comenzado!");
-        this.barcoActual = 0;
+        // Inicializaciones necesarias
         this.barcos = [5, 4, 3, 3, 2, 2];
+        this.barcoActual = 0;
         this.horizontal = true;
-
-        this.mostrarTableros();
+    
+        // Generar HTML de tableros
+        this.generarTablero("board-p1", this.tableroUsuario.filas, this.tableroUsuario.columnas, this.tableroUsuario, 0);
+        this.generarTablero("board-m1", this.tableroMaquina.filas, this.tableroMaquina.columnas, this.tableroMaquina, 1);
+    
+        // Agregar eventos
         this.agregarEventos();
+    }
+
+    generarTablero(id, filas, columnas, tablero, playerOption) {
+        const { boardP1, boardM1 } = tablero.createBoard(filas); // Solo usamos filas (cuadrado)
+        if (playerOption === 1) {
+            tablero.board = boardM1;
+        } else {
+            tablero.board = boardP1;
+        }
+        tablero.renderBoard(tablero.board, id, playerOption); // Render con método propio
     }
 
     agregarEventos() {
@@ -131,4 +137,28 @@ class Juego {
         console.log("🤖 Tablero de la Máquina:");
         this.tableroMaquina.imprimir();
     }
+}
+
+export function init() {
+    console.log("✅ init() llamado desde juego.js");
+    const boton = document.getElementById("start-game");
+
+    if (!boton) {
+        console.error("❌ No se encontró el botón #start-game");
+        return;
+    }
+
+    boton.addEventListener("click", () => {
+        console.log("🎮 Botón presionado");
+        const input = document.getElementById("size-input");
+        const size = parseInt(input.value, 10);
+
+        if (isNaN(size) || size < 10 || size > 20) {
+            alert("El tamaño debe estar entre 10 y 20");
+            return;
+        }
+
+        const juego = new Juego(size, size);
+        juego.iniciar();
+    });
 }
