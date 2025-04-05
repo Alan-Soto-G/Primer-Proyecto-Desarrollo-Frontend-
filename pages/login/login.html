@@ -4,29 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-   <link rel="stylesheet" href="login.css">
-    
-    
-
-
+    <link rel="stylesheet" href="login.css">
 </head>
 <body>
-    
+    <!-- Fondo completo -->
     <div class="fondo-completo"></div>
+
+    <!-- Contenedor de la imagen superior -->
     <div class="contenedor-imagen">
         <img src="/assets/images/p1 .png" alt="Naval Battle" class="imagen-superior">
-        <img src="/assets/images/p2 (1).png" alt="Naval Battle" class="segunda-imagen">
     </div>
 
-    <div class="wrap">
-        <div ></div>
-        <form method="post">
-            <label>Nickname</label>
-            <br>
-            <input type="text" required>
-        </form>
+    <!-- Contenedor del pergamino -->
+    <div class="parchment-container">
+        <div class="form-container">
+            <form class="parchment-form">
+                <div class="form-group">
+                    <label for="nickname">Nickname</label>
+                    <input type="text" id="nickname" name="nickname" placeholder="Tu nombre de capitán" required>
+                    <label for="country">Selecciona tu país:</label>
+                    <div id="country-select-box" class="select-box">Selecciona un país</div>
+                    <div id="country-dropdown" class="dropdown"></div>
+                </div>
+                <button type="submit">¡Embarcarse!</button>
+            </form>
+        </div>
     </div>
-    
-    <script type="module" src="./index.js"></script>
+
+    <script type="module" src="login.js"></script>
 </body>
 </html>
