@@ -72,7 +72,28 @@ export class Tablero {
     return true;
     }
 
-
+    atacar(fila, columna) {
+        const celda = this.matriz[fila][columna];
+    
+        // ✅ Validación: Ya fue atacada
+        if (celda.status === "hit" || celda.status === "miss") {
+            return "Ya atacado";
+        }
+    
+        // 💥 Si hay un barco, se marca como impacto
+        if (celda.status === "ship") {
+            celda.status = "hit";
+            return "💥 Impacto!";
+        } else {
+            // ❌ Si no hay barco, es un fallo
+            this.matriz[fila][columna] = {
+                status: "miss",
+                ship: null
+            };
+            return "❌ Agua";
+        }
+    }    
+    
     renderBoard(id, playerOption) {
         const container = document.getElementById(id);
         container.innerHTML = "";
@@ -94,10 +115,16 @@ export class Tablero {
                 } else if (valor.status === "ship") {
                     celda.style.backgroundImage = `url('./assets/ship/ship${valor.ship}.png')`;
                 }
-    
+                
+                if (valor.status === "hit") {
+                    celda.style.backgroundImage = "url('./assets/shot/explosion.png')";
+                } else if (valor.status === "miss") {
+                    celda.style.backgroundImage = "url('./assets/shot/missedShot.png')";
+                }
+                
                 celda.style.backgroundSize = "cover";
                 container.appendChild(celda);
             }
         }
-    }            
+    }
 }    
