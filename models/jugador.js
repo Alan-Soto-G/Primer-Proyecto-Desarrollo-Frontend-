@@ -1,4 +1,4 @@
-import { Barco } from '../barco';
+import { Barco } from '../models/barco.js'; // ✅ BIEN (relativo a Jugador.js)
 
 export class Jugador {
     constructor(nombre) {

@@ -1,30 +1,24 @@
 import { Tablero } from '../../models/Tablero.js';
 import { Jugador } from '../../models/Jugador.js';
 
-let juego;
-
-export function init() {
-    console.log("✅ Página de juego cargada.");
-    juego = new Juego();
-    juego.iniciar();
-}
-
-class Juego {
-    constructor() {
-        this.tableroUsuario = new Tablero();
-        this.tableroMaquina = new Tablero();
+export class Juego {
+    constructor(filas, columnas) {
+        this.tableroUsuario = new Tablero(filas, columnas);
+        this.tableroMaquina = new Tablero(filas, columnas);
         this.jugador = new Jugador("Usuario");
         this.maquina = new Jugador("Máquina");
         this.turnoUsuario = true;
     }
 
     iniciar() {
-        console.log("🎮 ¡El juego ha comenzado!");
-        this.barcoActual = 0;
         this.barcos = [5, 4, 3, 3, 2, 2];
+        this.barcoActual = 0;
         this.horizontal = true;
 
-        this.mostrarTableros();
+        // Renderizamos directamente los tableros usando su matriz
+        this.tableroUsuario.renderBoard("board-p1", 0);
+        this.tableroMaquina.renderBoard("board-m1", 1);
+
         this.agregarEventos();
     }
 
@@ -78,12 +72,13 @@ class Juego {
 
         if (colocado) {
             console.log(`✅ Barco de ${longitud} colocado en (${fila}, ${columna})`);
+            this.tableroUsuario.renderBoard("board-p1", 0); // 🔄 Actualizamos visual
             this.barcoActual++;
 
             if (this.barcoActual >= this.barcos.length) {
                 console.log("🎯 ¡Todos los barcos colocados! Inicia el juego.");
                 this.colocarBarcosAleatoriamente(this.tableroMaquina);
-                this.mostrarTableros();
+                this.tableroMaquina.renderBoard("board-m1", 1);
             }
         } else {
             console.log("❌ No puedes colocar un barco aquí.");
@@ -95,8 +90,8 @@ class Juego {
         barcos.forEach(longitud => {
             let colocado = false;
             while (!colocado) {
-                const fila = Math.floor(Math.random() * 10);
-                const columna = Math.floor(Math.random() * 10);
+                const fila = Math.floor(Math.random() * tablero.filas);
+                const columna = Math.floor(Math.random() * tablero.columnas);
                 const horizontal = Math.random() < 0.5;
                 colocado = tablero.colocarBarco(fila, columna, longitud, horizontal);
             }
@@ -107,7 +102,10 @@ class Juego {
         const tableroObjetivo = this.turnoUsuario ? this.tableroMaquina : this.tableroUsuario;
         const resultado = tableroObjetivo.atacar(fila, columna);
         console.log(`🔹 ${this.turnoUsuario ? "Usuario" : "Máquina"} disparó a (${fila}, ${columna}): ${resultado}`);
-        this.mostrarTableros();
+
+        this.tableroUsuario.renderBoard("board-p1", 0);
+        this.tableroMaquina.renderBoard("board-m1", 1);
+
         this.turnoUsuario = !this.turnoUsuario;
 
         if (!this.turnoUsuario) {
@@ -118,17 +116,34 @@ class Juego {
     turnoMaquina() {
         let fila, columna;
         do {
-            fila = Math.floor(Math.random() * 10);
-            columna = Math.floor(Math.random() * 10);
+            fila = Math.floor(Math.random() * this.tableroUsuario.filas);
+            columna = Math.floor(Math.random() * this.tableroUsuario.columnas);
         } while (['💥', '❌'].includes(this.tableroUsuario.matriz[fila][columna]));
 
         this.realizarDisparo(fila, columna);
     }
+}
 
-    mostrarTableros() {
-        console.log("🧊 Tablero del Usuario:");
-        this.tableroUsuario.imprimir();
-        console.log("🤖 Tablero de la Máquina:");
-        this.tableroMaquina.imprimir();
+export function init() {
+    console.log("✅ init() llamado desde juego.js");
+    const boton = document.getElementById("start-game");
+
+    if (!boton) {
+        console.error("❌ No se encontró el botón #start-game");
+        return;
     }
+
+    boton.addEventListener("click", () => {
+        console.log("🎮 Botón presionado");
+        const input = document.getElementById("size-input");
+        const size = parseInt(input.value, 10);
+
+        if (isNaN(size) || size < 10 || size > 20) {
+            alert("El tamaño debe estar entre 10 y 20");
+            return;
+        }
+
+        const juego = new Juego(size, size);
+        juego.iniciar();
+    });
 }
