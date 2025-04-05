@@ -8,7 +8,7 @@ export default class Helper {
         const container = document.getElementById("contenedor");
         container.innerHTML = html;
 
-        const js = await import(`../pages/${viewName}/${viewName}.js`);
+        const js = await import(`/pages/${viewName}/${viewName}.js`);
         if (typeof js.init === "function") {
             js.init({ data });
         }
