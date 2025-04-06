@@ -1,130 +1,131 @@
 export class Tablero {
-    constructor(filas = 10, columnas = 10) {
-        this.filas = filas;
-        this.columnas = columnas;
-        this.matriz = Array.from({ length: filas }, () =>
-            Array.from({ length: columnas }, () => "~")
-        );
+    constructor(size) {
+        this.size = size;
     }
 
-    createBoard(size) {
+    createBoard() {
+        console.log("✅ Tablero inicializado.");
         const boardP1 = [];
-        const boardM1 = [];
+        const boardP2 = [];
         let cellId = 1;
     
-        for (let row = 0; row < size; row++) {
-            const rowP1 = [];
-            const rowM1 = [];
-    
-            for (let col = 0; col < size; col++) {
-                // Probabilidad de colocar un barco (ajusta el % según prefieras)
-                const hasShip = false; // No colocar barcos aún
-    
+        // Crear un arreglo plano con información de la fila y columna
+        for (let row = 0; row < this.size; row++) {
+            for (let col = 0; col < this.size; col++) {
                 const cellP1 = {
                     id: cellId,
-                    status: hasShip ? "ship" : "~",
-                    visible: true,
-                    ship: null, // No asignar ningún barco
+                    row,
+                    col,
+                    status: "w",       // w: water, ship: barco, hit: impacto, miss: fallado
+                    visible: true,     // Visible para jugador 1
+                    ship: null,
                     player: "p1",
                 };
-    
-                const cellM1 = {
-                    ...JSON.parse(JSON.stringify(cellP1)),
+                const cellP2 = {
+                    ...cellP1,
+                    id: cellId,        // Mismo id para la celda duplicada
+                    visible: false,    // Oculto para jugador 2
                     player: "p2",
-                    visible: false, // Oculto para el enemigo
                 };
-    
-                rowP1.push(cellP1);
-                rowM1.push(cellM1);
+                boardP1.push(cellP1);
+                boardP2.push(cellP2);
                 cellId++;
             }
-    
-            boardP1.push(rowP1);
-            boardM1.push(rowM1);
         }
-    
-        return { boardP1, boardM1 };
+        return { boardP1, boardP2 };
     }
 
-    colocarBarco(fila, columna, longitud, horizontal = true) {
-    // Verifica si el barco cabe dentro del tablero
-    if (horizontal && columna + longitud > this.columnas) return false;
-    if (!horizontal && fila + longitud > this.filas) return false;
+    colocarBarco(board, fila, columna, longitud, horizontal = true) {
+        // Validar que el barco quepa en el tablero
+        if (horizontal && (columna + longitud > this.size)) return false;
+        if (!horizontal && (fila + longitud > this.size)) return false;
 
-    // Verifica si las celdas están libres
-    for (let i = 0; i < longitud; i++) {
-        const f = fila + (horizontal ? 0 : i);
-        const c = columna + (horizontal ? i : 0);
+        // Verificar que las celdas estén libres (status === "w")
+        for (let i = 0; i < longitud; i++) {
+            const f = fila + (horizontal ? 0 : i);
+            const c = columna + (horizontal ? i : 0);
+            const cell = board.find(cel => cel.row === f && cel.col === c);
+            if (!cell || cell.status !== "w") return false;
+        }
 
-        if (this.matriz[f][c] !== "~" && this.matriz[f][c].status !== "~") return false;
+        // Colocar el barco actualizando las celdas correspondientes
+        for (let i = 0; i < longitud; i++) {
+            const f = fila + (horizontal ? 0 : i);
+            const c = columna + (horizontal ? i : 0);
+            const cell = board.find(cel => cel.row === f && cel.col === c);
+            if (cell) {
+                cell.status = "ship";
+                cell.ship = longitud;
+            }
+        }
+        return true;
     }
 
-    // Coloca el barco
-    for (let i = 0; i < longitud; i++) {
-        const f = horizontal ? fila : fila + i;
-        const c = horizontal ? columna + i : columna;
-    
-        this.matriz[f][c] = {
-            status: "ship",
-            ship: longitud,
-        };
-    }
-    return true;
-    }
-
-    atacar(fila, columna) {
-        const celda = this.matriz[fila][columna];
-    
-        // ✅ Validación: Ya fue atacada
-        if (celda.status === "hit" || celda.status === "miss") {
+    atacar(board, fila, columna) {
+        const cell = board.find(cel => cel.row === fila && cel.col === columna);
+        if (!cell) return "Celda no existe";
+        if (cell.status === "hit" || cell.status === "miss") {
             return "Ya atacado";
         }
-    
-        // 💥 Si hay un barco, se marca como impacto
-        if (celda.status === "ship") {
-            celda.status = "hit";
+        if (cell.status === "ship") {
+            cell.status = "hit";
             return "💥 Impacto!";
         } else {
-            // ❌ Si no hay barco, es un fallo
-            this.matriz[fila][columna] = {
-                status: "miss",
-                ship: null
-            };
+            cell.status = "miss";
+            cell.ship = null;
             return "❌ Agua";
         }
     }    
     
-    renderBoard(id, playerOption) {
-        const container = document.getElementById(id);
-        container.innerHTML = "";
-        container.style.display = "grid";
-        container.style.gridTemplateColumns = `repeat(${this.columnas}, 30px)`;
-        container.style.gridTemplateRows = `repeat(${this.filas}, 30px)`;
-    
-        for (let i = 0; i < this.filas; i++) {
-            for (let j = 0; j < this.columnas; j++) {
-                const celda = document.createElement("div");
-                celda.classList.add("cell");
-                celda.dataset.fila = i;
-                celda.dataset.columna = j;
-    
-                const valor = this.matriz[i][j]; // Usamos la matriz actualizada
-    
-                if (valor === "~" || valor.status === "~") {
-                    celda.style.backgroundImage = "url('./assets/shot/water.png')";
-                } else if (valor.status === "ship") {
-                    celda.style.backgroundImage = `url('./assets/ship/ship${valor.ship}.png')`;
-                }
-                
-                if (valor.status === "hit") {
-                    celda.style.backgroundImage = "url('./assets/shot/explosion.png')";
-                } else if (valor.status === "miss") {
-                    celda.style.backgroundImage = "url('./assets/shot/missedShot.png')";
-                }
-                
-                celda.style.backgroundSize = "cover";
-                container.appendChild(celda);
+    renderBoard(board, containerId, option) {
+        const boardContainer = document.getElementById(containerId);
+        boardContainer.innerHTML = "";
+        boardContainer.style.display = "grid";
+        boardContainer.style.gridTemplateColumns = `repeat(${this.size}, minmax(25px, 1fr))`;
+
+        // Ordenar las celdas para renderizar de forma correcta (fila por fila)
+        board.sort((a, b) => {
+            if (a.row === b.row) return a.col - b.col;
+            return a.row - b.row;
+        });
+
+        board.forEach(cell => {
+            let image;
+            let path;
+            switch(cell.status) {
+                case "w": 
+                    path = "/assets/shot/";
+                    image = "water.png";
+                    break;
+                case "ship":
+                    path = "/assets/ship/";
+                    image = cell.visible ? "ship.png" : "water.png";
+                    break;
+                case "hit":
+                    path = "/assets/shot/";
+                    image = "hit.png";
+                    break;
+                default:
+                    path = "/assets/shot/";
+                    image = "missedShot.png";
             }
-        }
+            // Dependiendo de la opción y jugador, renderizamos un botón o un div con imagen
+            if (option === 2 && cell.player === "p2") {
+                const button = document.createElement("button");
+                button.className = "cell";
+                button.innerHTML = `<img src="${path}${image}" alt="${cell.status}" data-id="${cell.id}">`;
+                boardContainer.appendChild(button);
+            } else if (option === 1) {
+                const div = document.createElement("div");
+                div.className = "cell-image";
+                div.innerHTML = `<img src="${path}${image}" alt="${cell.status}" data-id="${cell.id}">`;
+                boardContainer.appendChild(div);
+            } else {
+                const button = document.createElement("button");
+                button.className = "cell";
+                button.innerHTML = `<img src="${path}${image}" alt="${cell.status}" data-id="${cell.id}">`;
+                boardContainer.appendChild(button);
+            }
+        });
     }
-}    
+}
