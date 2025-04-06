@@ -62,10 +62,14 @@ html, body {
     margin-bottom: 20px; /* Espacio inferior */
 }
 
+input::placeholder {
+    color: black; /* Cambia el color del texto del placeholder a negro */
+}
+
 /* Formulario dentro del pergamino */
 .form-container {
     position: absolute;
-    top: 50%; /* Centra verticalmente */
+    top: 55%; /* Centra verticalmente */
     left: 50%; /* Centra horizontalmente */
     transform: translate(-50%, -50%); /* Ajusta el centro */
     width: 85%; /* Ancho relativo */
@@ -105,15 +109,15 @@ input[type="text"] {
     font-family: 'Times New Roman', serif; /* Fuente */
     font-size: 0.9rem; /* Tamaño de fuente */
     text-align: center; /* Centra el texto */
+    margin-bottom: 10%;
 }
 
-/* Configuración de la imagen y botón de Start */
 .start-container {
     position: absolute; /* Posiciona el contenedor dentro del pergamino */
-    bottom: 10px; /* Ubica el contenedor en la parte inferior del pergamino */
+    bottom: -40%; /* Ubica el contenedor en la parte inferior del pergamino */
     left: 50%; /* Centra horizontalmente */
     transform: translateX(-50%); /* Ajusta el centro horizontal */
-    text-align: unset; /* Centra el contenido dentro del contenedor */
+    text-align: center; /* Centra el contenido dentro del contenedor */
     width: 100%; /* Asegura que ocupe todo el ancho del pergamino */
 }
 
@@ -131,16 +135,16 @@ input[type="text"] {
     top: 50%; /* Ajusta la posición vertical */
     left: 50%; /* Ajusta la posición horizontal */
     transform: translate(-50%, -50%);
-    width: 60px; /* Ancho del botón */
+    width: 30px; /* Ancho del botón */
     height: 20px; /* Altura del botón */
-    background-color: transparent; /* Botón invisible */
+    background-color:transparent; /* Botón invisible */
     border: none; /* Sin borde */
     cursor: pointer; /* Cambia el cursor al pasar */
 }
 
 /* Efecto de iluminación al pasar el cursor */
 .start-button:hover {
-    box-shadow: 0 0 15px 5px rgba(255, 255, 0, 0.7); /* Efecto de iluminación */
+    box-shadow: 0 0 15px 5px rgba(224, 20, 20, 0.7); /* Efecto de iluminación */
     border-radius: 5px; /* Bordes redondeados */
 }
 
@@ -202,5 +206,166 @@ input[type="text"] {
 
     .start-image {
         width: 80px; /* Reduce aún más la imagen de Start en pantallas pequeñas */
+    }
+}
+
+@media (max-width: 480px) {
+    .imagen-superior {
+        width: 80%;
+        max-width: 220px;
+        margin-top: 10px;
+    }
+
+    .parchment-container {
+        width: 80%;
+        max-width: 250px;
+        margin: 15px auto;
+        aspect-ratio: 3 / 4;
+        background-size: 100% 100%;
+    }
+
+    .form-container {
+        width: 90%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 10px 0;
+    }
+
+    label {
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+        color: #5a3921;
+    }
+
+    input[type="text"] {
+        width: 90%;
+        max-width: 200px;
+        font-size: 0.9rem;
+        padding: 6px 10px;
+        margin: 0 auto 10px auto;
+    }
+
+    .select-box {
+        width: 90%;
+        max-width: 200px;
+        font-size: 0.9rem;
+        padding: 6px 10px;
+        margin: 0 auto;
+    }
+
+    .start-image {
+        width: 60px;
+        height: auto;
+        margin: 10px auto 0 auto;
+        display: block;
+    }
+
+    .start-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 20px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .start-button:hover {
+        box-shadow: 0 0 12px 4px rgba(255, 0, 0, 0.6);
+        border-radius: 5px;
+    }
+}
+
+/* Ajustes para pantallas horizontales (computadoras) */
+@media (min-width: 1024px) {
+    .contenedor-imagen {
+         /* Usa flexbox para alinear las imágenes horizontalmente */
+        /* Alinea las imágenes en fila */
+        justify-content: space-between; /* Espacia las imágenes horizontalmente */
+        align-items: flex-start; /* Alinea las imágenes en la parte superior */
+        gap: 100%; /* Espacio entre las imágenes */
+        
+    }
+
+    .imagen-superior {
+        width: 90%; /* Reduce el tamaño de la primera imagen */
+        max-width: 500px; /* Tamaño máximo */
+        height: auto; /* Mantiene la proporción */
+        margin-left: 8%; /* Elimina el margen automático */
+        
+    }
+
+    .parchment-container {
+        margin-top: -15%; /* Mueve el pergamino más arriba */
+        margin-right: 25%;
+        width: auto;
+    }
+    
+    .start-image{
+        margin-top: -80%;
+        margin-right: 40%;
+    }
+    .form-container,
+    input[type="text"] {
+    pointer-events: auto; /* Asegura que se puedan clickear o escribir */
+    z-index: 2; /* Asegura que estén por encima de cualquier cosa que los tape */
+}
+
+    .start-container .start-button {
+        margin-top: -51%;
+        left: 47%;
+        transform: translate(-50%, -50%);
+        width: 10%;
+        height: 20px;
+        z-index: 3;
+        pointer-events: auto;
+        
+    }
+   
+}
+
+@media (min-width: 250px ) and (max-width: 480px){
+    .imagen-superior {
+        width: calc(1.2 * 70%); /* Asegura que sea un 20% más grande que el pergamino */
+        max-width: 300px; /* Tamaño máximo */
+        height: auto; /* Mantiene la proporción */
+        display: block; /* Asegura que sea un bloque */
+        margin: 0 auto; /* Centra horizontalmente */
+        object-fit: contain; /* Ajusta la imagen dentro del contenedor */
+    }
+
+    .parchment-container {
+        width: 70%; /* Ajusta el ancho del pergamino */
+        max-width: 240px; /* Tamaño máximo */
+        margin: 20px auto 0 auto; /* Espacio superior y centrado horizontal */
+        position: relative; /* Asegura que no se superponga con otros elementos */
+    }
+
+    .form-container {
+        width: 65%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        padding: 5px;
+        
+    }
+
+    .start-image{
+        margin-top: -80%;
+        margin-right: 40%;
+    }
+    
+   
+    .start-container .start-button {
+        margin-top: -51%;
+        left: 47%;
+        transform: translate(-50%, -50%);
+        width: 10%;
+        height: 20px;
+        z-index: 3;
+        pointer-events: auto;
+        
     }
 }
