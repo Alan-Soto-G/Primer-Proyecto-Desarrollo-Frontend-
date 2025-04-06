@@ -79,6 +79,10 @@ export class Tablero {
     
     renderBoard(board, containerId, option) {
         const boardContainer = document.getElementById(containerId);
+        if (!boardContainer) {
+            console.error(`No se encontró el contenedor con id ${containerId}`);
+            return;
+        }
         boardContainer.innerHTML = "";
         boardContainer.style.display = "grid";
         boardContainer.style.gridTemplateColumns = `repeat(${this.size}, minmax(25px, 1fr))`;
@@ -101,9 +105,9 @@ export class Tablero {
                     path = "/assets/ship/";
                     image = cell.visible ? "ship.png" : "water.png";
                     break;
-                case "hit":
+                case "h":
                     path = "/assets/shot/";
-                    image = "hit.png";
+                    image = "hit.gif";
                     break;
                 default:
                     path = "/assets/shot/";
