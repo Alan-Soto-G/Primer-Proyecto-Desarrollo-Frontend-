@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="login.css">
-</head>
+    <link rel="stylesheet" href="/pages/login/login.css"></head>
 <body>
     <!-- Fondo completo -->
     <div class="fondo-completo"></div>
@@ -17,22 +16,23 @@
 
     <!-- Contenedor del pergamino -->
     <div class="parchment-container">
+        <div class="start-container">
+            <img src="/assets/images/start.png" alt="Start" class="start-image">
+            <button class="start-button" ></button>
+        </div>
         <div class="form-container">
             <form class="parchment-form">
                 <div class="form-group">
                     <label for="nickname">Nickname</label>
-                    <input type="text" id="nickname" name="nickname" placeholder="Tu nombre de capitán" required>
-                    <label for="country">Selecciona tu país:</label>
-                    <div id="country-select-box" class="select-box">Selecciona un país</div>
+                    <input type="text" id="nickname" name="nickname" placeholder="Your captain's name">
+                    <label for="country">Select your country:</label>
+                    <div id="country-select-box" class="select-box">Find your country ⌵</div>
                     <div id="country-dropdown" class="dropdown"></div>
                 </div>
                <!--- <button type="submit">¡Embarcarse!</button> -->
             </form>
         </div>
-        <div class="start-container">
-            <img src="/assets/images/start.png" alt="Start" class="start-image">
-            <button class="start-button"></button>
-        </div>
+        
     </div>
 
     <script type="module" src="login.js"></script>
