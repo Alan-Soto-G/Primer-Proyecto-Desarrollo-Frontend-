@@ -1,239 +1,206 @@
 /* Estilos globales */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    margin: 0; /* Elimina márgenes predeterminados */
+    padding: 0; /* Elimina relleno predeterminado */
+    box-sizing: border-box; /* Incluye bordes y relleno en el tamaño total */
 }
 
 html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    width: 100%; /* Ocupa todo el ancho de la pantalla */
+    height: 100%; /* Ocupa todo el alto de la pantalla */
+    overflow: hidden; /* Oculta el scroll */
 }
 
 /* Fondo que cubre toda la pantalla */
 .fondo-completo {
-    position: fixed;
+    position: fixed; /* Fija el fondo en su lugar */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    min-height: 100vh;
-    background-image: url('/assets/images/inicio.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    z-index: -1;
+    min-height: 100vh; /* Asegura que cubra toda la altura de la ventana */
+    background-image: url('/assets/images/inicio.jpg'); /* Imagen de fondo */
+    background-size: cover; /* Escala la imagen para cubrir todo */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    z-index: -1; /* Envía el fondo detrás de otros elementos */
 }
 
-/* Contenedor de las imágenes */
+/* Contenedor de las imágenes superiores */
 .contenedor-imagen {
     position: relative;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    z-index: 1;
-    margin-top: 20px;
+    display: flex; /* Usa flexbox para centrar elementos */
+    flex-direction: column; /* Alinea elementos en columna */
+    align-items: center; /* Centra horizontalmente */
+    gap: 10px; /* Espacio entre elementos */
+    z-index: 1; /* Asegura que esté sobre el fondo */
+    margin-top: 20px; /* Espacio superior */
 }
 
 .imagen-superior {
-    width: 35%;
-    max-width: 350px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-    object-fit: contain;
+    width: 35%; /* Escala la imagen al 35% del ancho */
+    max-width: 350px; /* Tamaño máximo */
+    height: auto; /* Mantiene la proporción */
+    display: block; /* Asegura que sea un bloque */
+    margin: 0 auto; /* Centra horizontalmente */
+    object-fit: contain; /* Ajusta la imagen dentro del contenedor */
 }
 
-/* Pergamino */
+/* Configuración del pergamino */
 .parchment-container {
-    width: 25%;
-    max-width: 300px;
+    width: 25%; /* Ancho relativo */
+    max-width: 300px; /* Ancho máximo */
     height: auto;
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 3 / 4; /* Relación de aspecto */
     position: relative;
-    background-image: url('/assets/images/pergamino.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    margin: 0 auto;
-    margin-top: -10px;
-    margin-bottom: 20px;
+    background-image: url('/assets/images/pergamino.png'); /* Imagen del pergamino */
+    background-size: 100% 100%; /* Escala la imagen al tamaño del contenedor */
+    background-repeat: no-repeat; /* Evita que se repita */
+    margin: 0 auto; /* Centra horizontalmente */
+    margin-top: -10px; /* Ajusta la posición superior */
+    margin-bottom: 20px; /* Espacio inferior */
 }
 
 /* Formulario dentro del pergamino */
 .form-container {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 85%;
-    text-align: center;
-    padding: 10px;
-    box-sizing: border-box;
+    top: 50%; /* Centra verticalmente */
+    left: 50%; /* Centra horizontalmente */
+    transform: translate(-50%, -50%); /* Ajusta el centro */
+    width: 85%; /* Ancho relativo */
+    text-align: center; /* Centra el texto */
+    padding: 10px; /* Espaciado interno */
+    box-sizing: border-box; /* Incluye bordes y relleno */
 }
 
 .parchment-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+    display: flex; /* Usa flexbox */
+    flex-direction: column; /* Alinea elementos en columna */
+    align-items: center; /* Centra horizontalmente */
+    gap: 10px; /* Espacio entre elementos */
 }
 
 .form-group {
-    margin-bottom: 10px;
-    width: 100%;
+    margin-bottom: 10px; /* Espacio inferior */
+    width: 100%; /* Ocupa todo el ancho */
 }
 
 label {
-    display: block;
-    margin-bottom: 8px;
-    font-family: 'Times New Roman', serif;
-    font-size: 1rem;
-    color: #5a3921;
-    font-weight: bold;
+    display: block; /* Asegura que sea un bloque */
+    margin-bottom: 8px; /* Espacio inferior */
+    font-family: 'Times New Roman', serif; /* Fuente */
+    font-size: 1rem; /* Tamaño de fuente */
+    color: #5a3921; /* Color marrón */
+    font-weight: bold; /* Negrita */
 }
 
 input[type="text"] {
-    padding: 8px 12px;
-    width: 70%;
-    max-width: 250px;
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid #d4b483;
-    border-radius: 3px;
-    font-family: 'Times New Roman', serif;
-    font-size: 0.9rem;
-    text-align: center;
+    padding: 8px 12px; /* Espaciado interno */
+    width: 70%; /* Ancho relativo */
+    max-width: 250px; /* Ancho máximo */
+    background: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
+    border: 1px solid #d4b483; /* Borde marrón claro */
+    border-radius: 3px; /* Bordes redondeados */
+    font-family: 'Times New Roman', serif; /* Fuente */
+    font-size: 0.9rem; /* Tamaño de fuente */
+    text-align: center; /* Centra el texto */
 }
 
-button {
-    background: #8b5a2b;
-    color: white;
-    padding: 8px 20px;
-    border: none;
-    border-radius: 3px;
-    font-family: 'Times New Roman', serif;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background 0.3s;
-    margin-top: 10px;
+/* Configuración de la imagen y botón de Start */
+.start-container {
+    position: absolute; /* Posiciona el contenedor dentro del pergamino */
+    bottom: 10px; /* Ubica el contenedor en la parte inferior del pergamino */
+    left: 50%; /* Centra horizontalmente */
+    transform: translateX(-50%); /* Ajusta el centro horizontal */
+    text-align: unset; /* Centra el contenido dentro del contenedor */
+    width: 100%; /* Asegura que ocupe todo el ancho del pergamino */
 }
 
-button:hover {
-    background: #6d4624;
+/* Imagen de Start */
+.start-image {
+    width: 80px; /* Tamaño reducido de la imagen */
+    height: auto; /* Mantiene la proporción */
+    display: block;
+    margin: 0 auto; /* Centra la imagen horizontalmente */
+}
+
+/* Botón invisible sobre la imagen de Start */
+.start-button {
+    position: absolute;
+    top: 50%; /* Ajusta la posición vertical */
+    left: 50%; /* Ajusta la posición horizontal */
+    transform: translate(-50%, -50%);
+    width: 60px; /* Ancho del botón */
+    height: 20px; /* Altura del botón */
+    background-color: transparent; /* Botón invisible */
+    border: none; /* Sin borde */
+    cursor: pointer; /* Cambia el cursor al pasar */
+}
+
+/* Efecto de iluminación al pasar el cursor */
+.start-button:hover {
+    box-shadow: 0 0 15px 5px rgba(255, 255, 0, 0.7); /* Efecto de iluminación */
+    border-radius: 5px; /* Bordes redondeados */
 }
 
 /* Selector de país */
 .select-box {
-    padding: 8px 12px;
-    width: 70%;
-    max-width: 250px;
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid #d4b483;
-    border-radius: 3px;
-    font-family: 'Times New Roman', serif;
-    font-size: 0.9rem;
-    text-align: center;
-    cursor: pointer;
-    margin: 0 auto;
+    padding: 8px 12px; /* Espaciado interno */
+    width: 70%; /* Ancho relativo */
+    max-width: 250px; /* Ancho máximo */
+    background: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
+    border: 1px solid #d4b483; /* Borde marrón claro */
+    border-radius: 3px; /* Bordes redondeados */
+    font-family: 'Times New Roman', serif; /* Fuente */
+    font-size: 0.9rem; /* Tamaño de fuente */
+    text-align: center; /* Centra el texto */
+    cursor: pointer; /* Cambia el cursor al pasar */
+    margin: 0 auto; /* Centra horizontalmente */
 }
 
+/* Opciones del dropdown */
 .dropdown {
-    display: none;
-    position: absolute;
-    background: white;
-    border: 1px solid #d4b483;
-    border-radius: 3px;
-    max-height: 150px;
-    overflow-y: auto;
-    z-index: 10;
-    width: 100%;
+    display: none; /* Oculto por defecto */
+    position: absolute; /* Posición absoluta */
+    background: white; /* Fondo blanco */
+    border: 1px solid #d4b483; /* Borde marrón claro */
+    border-radius: 3px; /* Bordes redondeados */
+    max-height: 150px; /* Altura máxima */
+    overflow-y: auto; /* Scroll vertical si es necesario */
+    z-index: 10; /* Asegura que esté sobre otros elementos */
+    width: 100%; /* Ocupa todo el ancho del contenedor */
 }
 
 .dropdown-option {
-    padding: 8px 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    padding: 8px 12px; /* Espaciado interno */
+    cursor: pointer; /* Cambia el cursor al pasar */
+    display: flex; /* Usa flexbox */
+    align-items: center; /* Centra verticalmente */
+    gap: 8px; /* Espacio entre elementos */
 }
 
 .dropdown-option:hover {
-    background: #f0f0f0;
+    background: #f0f0f0; /* Cambia el fondo al pasar el cursor */
 }
 
 /* Ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
     .imagen-superior {
-        width: 50%;
+        width: 50%; /* Reduce el tamaño de la imagen */
         max-width: 250px;
     }
 
     .parchment-container {
-        width: 50%;
+        width: 50%; /* Reduce el tamaño del pergamino */
         max-width: 200px;
-        margin-top: -5px;
-        margin-bottom: 15px;
-    }
-
-    .form-container {
-        width: 90%;
-        padding: 5px;
     }
 
     input[type="text"] {
-        max-width: 180px;
-        font-size: 0.8rem;
+        max-width: 180px; /* Reduce el ancho del input */
     }
 
-    button {
-        font-size: 0.8rem;
-        padding: 6px 12px;
-    }
-
-    label {
-        font-size: 0.9rem;
-    }
-
-    .select-box {
-        width: 90%;
-        max-width: 200px;
-    }
-}
-
-/* Ajustes para pantallas horizontales */
-@media (max-width: 1024px) and (orientation: landscape) {
-    .imagen-superior {
-        width: 45%;
-        max-width: 300px;
-    }
-
-    .parchment-container {
-        width: 35%;
-        max-width: 220px;
-        margin-top: -10px;
-    }
-
-    .form-container {
-        width: 90%;
-    }
-
-    input[type="text"] {
-        max-width: 200px;
-    }
-
-    button {
-        font-size: 0.85rem;
-        padding: 6px 16px;
-    }
-
-    label {
-        font-size: 0.95rem;
-    }
-
-    .select-box {
-        width: 80%;
-        max-width: 220px;
+    .start-image {
+        width: 80px; /* Reduce aún más la imagen de Start en pantallas pequeñas */
     }
 }
