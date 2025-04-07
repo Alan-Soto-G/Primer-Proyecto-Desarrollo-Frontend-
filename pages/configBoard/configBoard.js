@@ -2,15 +2,14 @@ import { Tablero } from '../../models/tablero.js';
 import { downloadJSON } from '../../utils/downloadUtils.js';
 import Helper from "../../utils/helper.js";
 
-export function init() {
-    const selectElement = document.getElementById("selectSize");
-    let selectedValue = 10; // Valor predeterminado
-    let currentBoardP1, currentBoardP2;
+const selectElement = document.getElementById("selectSize");
+let selectedValue = 10; // Valor predeterminado
+let currentBoardP1, currentBoardP2;
 
-    // Variables para la colocación de barcos
-    const barcos = [5, 4, 3, 3, 2, 2];
-    let barcoActual = 0;
-    let horizontal = true;
+// Variables para la colocación de barcos
+const barcos = [5, 4, 3, 3, 2, 2];
+let barcoActual = 0;
+let horizontal = true;
 
 // Inicializar con el valor por defecto al cargar la página
 const boardDefault = new Tablero(selectedValue);
@@ -19,18 +18,20 @@ const boardDefault = new Tablero(selectedValue);
 colocarBarcosAleatoriamente(currentBoardP2, boardDefault);
 boardDefault.renderBoard(currentBoardP1, "board-p1", 0);
 
-    const buttonDownload = document.getElementById("downloadBtn");
-    buttonDownload.addEventListener("click", function () {
-        downloadJSON(currentBoardP1, "boardP1.json");
-        downloadJSON(currentBoardP2, "boardP2.json");
-    });
+const buttonDownload = document.getElementById("downloadBtn");
+buttonDownload.addEventListener("click", function() {
+    downloadJSON(currentBoardP1, "boardP1.json");
+    downloadJSON(currentBoardP2, "boardP2.json");
+});
 
-    selectElement.addEventListener("change", function () {
-        if (barcoActual > 0) {
-            alert("No puedes cambiar el tamaño una vez iniciada la colocación de barcos.");
-            this.value = selectedValue;
-            return;
-        }
+selectElement.addEventListener("change", function() {
+
+    if (barcoActual > 0) {
+        alert("No puedes cambiar el tamaño una vez iniciado la colocación de barcos.");
+        // Deselecciona o resetea el valor del select si lo deseas:
+        this.value = selectedValue;
+        return;
+    }
 
     selectedValue = parseInt(this.value, 10);
     console.log("✅ Valor seleccionado:", selectedValue);
@@ -77,15 +78,17 @@ function colocarBarcosAleatoriamente(board, tablero) {
     });
 }
 
-    const boardP1Elem = document.getElementById("board-p1");
-    boardP1Elem.addEventListener("click", (event) => {
-        const elem = event.target.closest("[data-fila]");
-        if (!elem) return;
-        const row = parseInt(elem.dataset.fila, 10);
-        const col = parseInt(elem.dataset.columna, 10);
-        if (isNaN(row) || isNaN(col)) return;
-        colocarBarcoUsuario(row, col);
-    });
+// Capturar clics en el tablero del usuario (colocación de barcos)
+const boardP1Elem = document.getElementById("board-p1");
+boardP1Elem.addEventListener("click", (event) => {
+    const elem = event.target.closest("[data-id]");
+    if (!elem) return;
+    const cellId = parseInt(elem.dataset.id, 10);
+    const cell = currentBoardP1.find(c => c.id === cellId);
+    if (!cell) return;
+    const { row, col } = cell;
+    colocarBarcoUsuario(row, col);
+});
 
 // Listener para cambiar orientación al presionar la tecla "R"
 document.addEventListener("keydown", (event) => {
@@ -95,28 +98,27 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
-    const locationInput = document.getElementById("Location-name");
-    const startGameBtn = document.getElementById("start-game");
+const locationInput = document.getElementById("Location-name");
+const startGameBtn = document.getElementById("start-game");
 
-    startGameBtn.addEventListener("click", () => {
-        if (!locationInput.value) {
-            alert("❌ You must enter a location city.");
-            return;
-        }
-        if (barcoActual < barcos.length) {
-            alert("Por favor, coloca todos los barcos antes de iniciar el juego.");
-            return;
-        }
+startGameBtn.addEventListener("click", () => {
+    if (!locationInput.value) {
+        alert("❌ You must enter a location city.");
+        return;
+    }
+    // Verificar que se hayan colocado todos los barcos
+    if (barcoActual < barcos.length) {
+        alert("Por favor, coloca todos los barcos antes de iniciar el juego.");
+        return;
+    }
+    const locationName = locationInput.value.trim();
+    locationInput.value = ""; // Limpiar el campo de entrada
+    console.log("✅ Nombre de la ubicación:", locationName);
 
-        const locationName = locationInput.value.trim();
-        locationInput.value = "";
-        console.log("✅ Nombre de la ubicación:", locationName);
+    localStorage.setItem("boardP1", JSON.stringify(currentBoardP1));
+    localStorage.setItem("boardP2", JSON.stringify(currentBoardP2));
+    localStorage.setItem("locationName", locationName);
+    localStorage.setItem("boardSize", selectedValue); // Guardar el tamaño del tablero
 
-        localStorage.setItem("boardP1", JSON.stringify(currentBoardP1));
-        localStorage.setItem("boardP2", JSON.stringify(currentBoardP2));
-        localStorage.setItem("locationName", locationName);
-        localStorage.setItem("boardSize", selectedValue);
-
-        Helper.loadView("game");
-    });
-}
+    Helper.loadView("game")
+});
