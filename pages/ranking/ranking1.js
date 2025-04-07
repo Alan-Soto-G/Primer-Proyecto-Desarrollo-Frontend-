@@ -29,3 +29,4 @@ getRanking().then((ranking) => {
         console.log("Ranking Row:", row);
     });
 });
+

@@ -1,6 +1,7 @@
 import { Tablero } from '../../models/tablero.js';
 import { Jugador } from '../../models/jugador.js';
 import { mostrarRanking } from "../ranking/ranking.js";
+import { downloadJSON } from '../../utils/downloadUtils.js';
 import Helper from '../../utils/helper.js';
 
 class Juego {
@@ -285,5 +286,5 @@ juego.obtenerClima();
 const buttonDownload = document.getElementById("downloadBtn");
 buttonDownload.addEventListener("click", function() {
     downloadJSON(juego.boardUsuario, "boardP1.json");
-    downloadJSON(juego.board, "boardP2.json");
+    downloadJSON(juego.boardMaquina, "boardP2.json");
 });

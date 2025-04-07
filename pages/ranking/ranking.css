@@ -1,4 +1,82 @@
+/* Asegura que html y body ocupen todo el alto de la pantalla */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+/* Estilos globales */
+body {
+    font-family: 'Orbitron', sans-serif;
+    /* Se quita el padding para que la imagen cubra todo */
+    padding: 0;
+    background-image: url('../../assets/configuracion.png.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Contenedor general */
+.ranking-container {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Encabezado */
+header {
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 3rem;
+    color: #fff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.5);
+    display: inline-block;
+    border-radius: 8px;
+}
+
+/* Contenedor de la tabla */
 .scrollable-table {
-    max-height: 300px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     overflow-y: auto;
+    max-height: 400px;
+    margin: 0 auto;
+}
+
+/* Estilos para la tabla */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.table thead {
+    background: #2c3e50; /* Color cambiado para una mejor apariencia */
+    color: #ffffff;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+    .scrollable-table {
+        padding: 10px;
+    }
+    .table th,
+    .table td {
+        padding: 8px;
+    }
 }
