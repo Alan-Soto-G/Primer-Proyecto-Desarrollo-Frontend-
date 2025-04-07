@@ -108,6 +108,10 @@ class Juego {
         if (!this.turnoUsuario) {
             setTimeout(() => this.turnoMaquina(), 1000);
         }
+    
+        if (this.verificarFinDelJuego()) {
+            this.finalizarPartida();
+        }
     }
     
     turnoMaquina() {
