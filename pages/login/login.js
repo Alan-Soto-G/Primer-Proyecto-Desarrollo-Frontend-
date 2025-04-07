@@ -28,6 +28,7 @@ async function LoadCountrySelector() {
             option.addEventListener("click", function () {
                 countrySelectBox.textContent = name; 
                 countryDropdown.style.display = "none";
+                countrySelectBox.dataset.code = code; // Guarda el código del país en el dataset
             });
 
             // Añade la opción al dropdown
@@ -69,6 +70,9 @@ document.querySelector(".start-button").addEventListener("click", function () {
         alert("Por favor, selecciona un país.");
         return;
     }
+
+    localStorage.setItem("nickname", nicknameInput.value.trim());
+    localStorage.setItem("country", countrySelectBox.dataset.code);
 
     // Si todo está correcto, carga la vista configBoard
     Helper.loadView("configBoard");

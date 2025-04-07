@@ -54,7 +54,7 @@ export class Tablero {
             const c = columna + (horizontal ? i : 0);
             const cell = board.find(cel => cel.row === f && cel.col === c);
             if (cell) {
-                cell.status = "ship";
+                cell.status = "s";
                 cell.ship = longitud;
             }
         }
@@ -68,10 +68,10 @@ export class Tablero {
             return "Ya atacado";
         }
         if (cell.status === "ship") {
-            cell.status = "hit";
+            cell.status = "h";
             return "💥 Impacto!";
         } else {
-            cell.status = "miss";
+            cell.status = "mi";
             cell.ship = null;
             return "❌ Agua";
         }
@@ -101,9 +101,9 @@ export class Tablero {
                     path = "/assets/shot/";
                     image = "water.png";
                     break;
-                case "ship":
+                case "s":
                     path = "/assets/ship/";
-                    image = cell.visible ? "ship.png" : "water.png";
+                    image = cell.visible ? "ship1.png" : "water.png";
                     break;
                 case "h":
                     path = "/assets/shot/";
