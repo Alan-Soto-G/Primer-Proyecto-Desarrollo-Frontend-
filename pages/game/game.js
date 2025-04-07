@@ -231,7 +231,23 @@ class Juego {
             weatherList.innerHTML = "<li>City: Not specified</li>";
             return;
         }
-    
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const weatherContainer = document.getElementById("weather-container");
+            const weatherSummary = document.getElementById("weather-summary");
+          
+            // Agrega un evento de clic al resumen del clima
+            weatherSummary.addEventListener("click", () => {
+              // Alterna la clase "active" en el contenedor del clima
+              weatherContainer.classList.toggle("active");
+            });
+
+            weatherSummary.addEventListener("click", () => {
+                console.log("Weather summary clicked!");
+                weatherContainer.classList.toggle("active");
+              });
+        });
+        
         try {
             const response = await fetch(`http://127.0.0.1:5000/weather?city=${ciudad}`);
             if (!response.ok) {
@@ -277,6 +293,40 @@ class Juego {
             console.error("❌ Error al obtener el ranking:", error);
         }
     }    
+}
+
+const weatherContainer = document.getElementById("weather-container");
+const weatherSummary = document.getElementById("weather-summary");
+const weatherDetails = document.getElementById("weather-details");
+
+async function obtenerClima() {
+  try {
+    const response = await fetch("https://api.open-meteo.com/v1/forecast?latitude=4.6097&longitude=-74.0817&current_weather=true&hourly=temperature_2m,weathercode");
+    const data = await response.json();
+    const weather = data.current_weather;
+
+    // Mostrar resumen del clima
+    weatherSummary.textContent = `🌤️ Weather: ${weather.temperature}°C`;
+
+    // Mostrar detalles dentro del contenedor
+    weatherDetails.innerHTML = `
+      <p><strong>Temperature:</strong> ${weather.temperature}°C</p>
+      <p><strong>Windspeed:</strong> ${weather.windspeed} km/h</p>
+      <p><strong>Time:</strong> ${weather.time}</p>
+    `;
+  } catch (error) {
+    weatherSummary.textContent = "⚠️ Weather info unavailable";
+    weatherDetails.innerHTML = "<p>Error fetching weather data</p>";
+  }
+}
+
+obtenerClima();
+
+// Mostrar/ocultar detalles al hacer clic
+if (weatherContainer && weatherSummary) {
+  weatherSummary.addEventListener("click", () => {
+    weatherContainer.classList.toggle("active");
+  });
 }
 
 const size = localStorage.getItem("boardSize") || 10; // Tamaño por defecto
