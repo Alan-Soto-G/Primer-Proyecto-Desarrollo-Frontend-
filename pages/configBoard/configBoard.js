@@ -25,20 +25,18 @@ buttonDownload.addEventListener("click", function() {
 });
 
 selectElement.addEventListener("change", function() {
-
     if (barcoActual > 0) {
         alert("No puedes cambiar el tamaño una vez iniciado la colocación de barcos.");
-        // Deselecciona o resetea el valor del select si lo deseas:
         this.value = selectedValue;
         return;
     }
-
     selectedValue = parseInt(this.value, 10);
     console.log("✅ Valor seleccionado:", selectedValue);
     const board = new Tablero(selectedValue);
     ({ boardP1: currentBoardP1, boardP2: currentBoardP2 } = board.createBoard());
-    // Actualizamos boardDefault para usar el nuevo tamaño también
     boardDefault.size = selectedValue;
+    // Colocar barcos aleatoriamente en el tablero enemigo tras cambiar el tamaño
+    colocarBarcosAleatoriamente(currentBoardP2, boardDefault);
     boardDefault.renderBoard(currentBoardP1, "board-p1", 0);
 });
 

@@ -1,5 +1,6 @@
 import { Tablero } from '../../models/tablero.js';
 import { Jugador } from '../../models/jugador.js';
+import { mostrarRanking } from "../ranking/ranking.js";
 import Helper from '../../utils/helper.js';
 
 class Juego {
@@ -204,7 +205,7 @@ class Juego {
             country_code: localStorage.getItem("country_code") || "co",
         };
     
-        fetch("http://127.0.0.1/score-recorder", {
+        fetch("http://127.0.0.1:5000/score-recorder", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -218,6 +219,7 @@ class Juego {
         .catch(error => {
             console.error("❌ Error al enviar puntaje:", error);
         });
+        mostrarRanking();
     }
 
     async obtenerClima() {
@@ -266,7 +268,30 @@ class Juego {
             weatherList.innerHTML = "<li>City: Error fetching data</li>";
         }
     }
+
+    async obtenerRanking() {
+        try {
+            const response = await fetch("http://127.0.0.1:5000/ranking");
+            if (!response.ok) {
+                throw new Error(`Error al obtener ranking: ${response.statusText}`);
+            }
     
+            const rankingData = await response.json();
+    
+            const rankingList = document.getElementById("ranking-list");
+            if (!rankingList) return;
+    
+            rankingList.innerHTML = "<h3>🏆 Ranking Global</h3>";
+            rankingData.forEach((player, index) => {
+                rankingList.innerHTML += `
+                    <li>
+                        <strong>#${index + 1}</strong> ${player.nick_name} - ${player.score} pts (${player.country_code.toUpperCase()})
+                    </li>`;
+            });
+        } catch (error) {
+            console.error("❌ Error al obtener el ranking:", error);
+        }
+    }    
 }
 
 const weatherContainer = document.getElementById("weather-container");
@@ -303,8 +328,12 @@ if (weatherContainer && weatherSummary) {
   });
 }
 
-  
 const size = localStorage.getItem("boardSize") || 10; // Tamaño por defecto
 const juego = new Juego(size);
 juego.iniciar();
 juego.obtenerClima();
+const buttonDownload = document.getElementById("downloadBtn");
+buttonDownload.addEventListener("click", function() {
+    downloadJSON(juego.boardUsuario, "boardP1.json");
+    downloadJSON(juego.board, "boardP2.json");
+});
