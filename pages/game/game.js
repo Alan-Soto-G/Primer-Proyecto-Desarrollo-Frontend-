@@ -282,3 +282,8 @@ const size = localStorage.getItem("boardSize") || 10; // Tamaño por defecto
 const juego = new Juego(size);
 juego.iniciar();
 juego.obtenerClima();
+const buttonDownload = document.getElementById("downloadBtn");
+buttonDownload.addEventListener("click", function() {
+    downloadJSON(juego.boardUsuario, "boardP1.json");
+    downloadJSON(juego.board, "boardP2.json");
+});
