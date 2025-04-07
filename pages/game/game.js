@@ -205,7 +205,7 @@ class Juego {
             country_code: localStorage.getItem("country_code") || "co",
         };
     
-        fetch("http://127.0.0.1/score-recorder", {
+        fetch("http://127.0.0.1:5000/score-recorder", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
