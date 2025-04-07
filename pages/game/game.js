@@ -127,17 +127,26 @@ class Juego {
             return;
         }
 
-        // Si el disparo fue "agua" o fallido (penalización), se cede el turno a la máquina
+        // Si el disparo fue "agua" o fallido (penalización), se cambia de turno:
         if (resultado === "❌ Agua" || disparoFallido) {
-            this.turnoUsuario = false;
-            this.toggleInteraccionTableroMaquina(true);
+            // Cambiamos de turno de forma simétrica: si era del usuario, le toca a la máquina y viceversa.
+            this.turnoUsuario = !this.turnoUsuario;
+            this.toggleInteraccionTableroMaquina(this.turnoUsuario);
             this.isProcessingShot = false;
-            setTimeout(() => this.turnoMaquina(), 1000);
+            // Si la máquina tiene el turno, se llama automáticamente.
+            if (!this.turnoUsuario) {
+                setTimeout(() => this.turnoMaquina(), 1000);
+            }
         } else {
-            // Si hubo un impacto exitoso, el usuario no conserva el turno
-            this.turnoUsuario = true;
-            this.toggleInteraccionTableroMaquina(true);
+            // Si fue un impacto, el jugador conserva el turno.
             this.isProcessingShot = false;
+            if (!this.turnoUsuario) {
+                // Si la máquina dio impacto, dispara nuevamente automáticamente.
+                setTimeout(() => this.turnoMaquina(), 1000);
+            } else {
+                // Si el usuario dio impacto, se habilita la interacción para seguir disparando.
+                this.toggleInteraccionTableroMaquina(true);
+            }
         }
 
         console.log("Turno actual:", this.turnoUsuario ? "Usuario" : "Máquina");
@@ -152,7 +161,7 @@ class Juego {
     }
 
     turnoMaquina() {
-        this.isProcessingShot = true;
+        // No se establece isProcessingShot en true aquí para permitir el disparo.
         this.turnoUsuario = false;
         let fila, columna, cell;
         let intentos = 0;
@@ -210,9 +219,40 @@ class Juego {
             console.error("❌ Error al enviar puntaje:", error);
         });
     }
+
+    async obtenerClima() {
+        const ciudad = localStorage.getItem("locationName");
+        if (!ciudad) {
+            console.error("❌ No se encontró una ciudad en localStorage.");
+            const weatherList = document.getElementById("weather-list");
+            weatherList.innerHTML = "<li>City: Not specified</li>";
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/weather?city=${ciudad}`);
+            if (!response.ok) {
+                throw new Error(`Error en la solicitud: ${response.statusText}`);
+            }
+            const weatherData = await response.json();
+    
+            const weatherList = document.getElementById("weather-list");
+            weatherList.innerHTML = `
+                <li>City: ${weatherData.city || "Unknown"}</li>
+                <li>Description: ${weatherData.description || "N/A"}</li>
+                <li><img src="${weatherData.icon || ""}" alt="weather icon"></li>
+                <li>Temperature: ${weatherData.temperature || "N/A"}</li>
+                <li>Wind Speed: ${weatherData.wind_speed || "N/A"}</li>
+            `;
+        } catch (error) {
+            console.error("❌ Error al obtener los datos del clima:", error);
+            const weatherList = document.getElementById("weather-list");
+            weatherList.innerHTML = "<li>City: Error fetching data</li>";
+        }
+    }
     
 }
-    
+obtenerClima()
 const size = localStorage.getItem("boardSize") || 10; // Tamaño por defecto
 const juego = new Juego(size);
 juego.iniciar();

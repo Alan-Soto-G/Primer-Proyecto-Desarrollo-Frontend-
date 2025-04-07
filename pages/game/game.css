@@ -1,4 +1,132 @@
-.scrollable-table {
-    max-height: 300px;
+body {
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    background-image: url('/assets/images/3.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    overflow-x: hidden;
+  }
+  
+  /* NAVBAR */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(12, 12, 12, 0.7);
+    padding: 10px 30px;
+    color: #fff;
+    border-bottom: 2px solid #444;
+  }
+  
+  nav h1 {
+    font-size: 1.8rem;
+    margin: 0;
+  }
+  
+  #downloadBtn {
+    background-color: #e0a800;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+    font-weight: bold;
+  }
+  
+  #downloadBtn:hover {
+    transform: scale(1.05);
+    background-color: #cf9a00;
+  }
+  
+  /* CONTENEDOR GENERAL */
+  #containerGame {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+    min-height: 100vh;
+    gap: 30px;
+  }
+  
+  /* TABLEROS */
+  .boards-container {
+    flex-grow: 1;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .boards-container h2 {
+    text-align: center;
+  }
+  
+  /* PANEL DE RANKING */
+  .ranking-panel {
+    backdrop-filter: blur(12px);
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
+    padding: 20px;
+    min-width: 280px;
+    max-width: 320px;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  }
+  
+  .ranking-panel h3 {
+    margin-top: 0;
+    text-align: center;
+  }
+  
+  .scrollable-table {
+    max-height: 400px;
     overflow-y: auto;
-}
+  }
+  
+  .table {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .table th,
+  .table td {
+    text-align: center;
+    border: 1px solid #aaa;
+  }
+  
+  /* RESPONSIVE */
+  @media (max-width: 992px) {
+    #containerGame {
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+  
+    .ranking-panel {
+      width: 90%;
+    }
+  
+    .boards-container {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    nav h1 {
+      font-size: 1.5rem;
+    }
+  
+    #downloadBtn {
+      width: 100%;
+      text-align: center;
+      margin-top: 10px;
+    }
+  }
+  

@@ -1,41 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../utils/boardStyle.css">
-    <link rel="stylesheet" href="../../pages/game/game.css">
-    <title>Batalla Naval</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Naval Battle</title>
+
+  <link rel="stylesheet" href="../../utils/boardStyle.css" />
+  <link rel="stylesheet" href="../../pages/game/game.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
 </head>
 <body>
-    <div class="juego-container">
-        <h1>🛳️ Batalla Naval</h1>
-        <div class="boards-container">
-            <div>
-                <h2>Your Board</h2>
-                <div id="board-p1" class="board"></div>
-            </div>
-            <div>
-                <h2>Enemy Board</h2>
-                <div id="board-p2" class="board"></div>
-            </div>
-        </div>
+
+  <!-- NAVBAR -->
+  <nav>
+    <h1>⚓ Naval Battle</h1>
+    <button id="downloadBtn">Export Map</button>
+  </nav>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div id="containerGame">
+    
+    <!-- TABLEROS -->
+    <div class="boards-container">
+      <div>
+        <h2>Your Board</h2>
+        <div id="board-p1" class="board"></div>
+      </div>
+      <div>
+        <h2>Enemy Board</h2>
+        <div id="board-p2" class="board"></div>
+      </div>
     </div>
 
-    <div class="scrollable-table">
+    <!-- TABLA DE RANKING -->
+    <div class="ranking-panel">
+      <h3>🏆 Ranking</h3>
+      <div class="scrollable-table">
         <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Score</th>
-                    <th>Nickname</th>
-                    <th>Country</th>
-                </tr>
-            </thead>
-            <tbody id="ranking-body"></tbody>
+          <thead>
+            <tr>
+              <th>Score</th>
+              <th>Nickname</th>
+              <th>Country</th>
+            </tr>
+          </thead>
+          <tbody id="ranking-body"></tbody>
         </table>
+      </div>
     </div>
 
-    <script type="module" src="../ranking/ranking.js"></script>
-    <script type="module" src="./game.js"></script>
+  </div>
+
+  <script type="module" src="../ranking/ranking.js"></script>
+  <script type="module" src="./game.js"></script>
 </body>
 </html>
