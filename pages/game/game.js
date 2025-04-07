@@ -15,6 +15,11 @@ class Juego {
         this.maquina = new Jugador("Máquina");
         this.turnoUsuario = true;
         this.isProcessingShot = false; // Inicializamos el flag
+        this.aciertos = 0;
+        this.fallos = 0;
+        this.puntaje = 0;
+        this.ultimaCasillaImpacto = null;
+
 
         // Barcos definidos y orientación inicial
         this.barcos = [5, 4, 3, 3, 2, 2];
@@ -60,70 +65,120 @@ class Juego {
     }
     
     realizarDisparo(fila, columna) {
-        // Si ya se está procesando un disparo, ignoramos el nuevo click
         if (this.isProcessingShot) return;
         this.isProcessingShot = true;
-        
-        // Inmediatamente deshabilitar el tablero de la máquina al disparar el usuario
+
         if (this.turnoUsuario) {
             this.toggleInteraccionTableroMaquina(false);
         }
-    
-        // Selecciona el tablero objetivo en base al turno
+
         const resultado = this.turnoUsuario
             ? this.tableroMaquina.atacar(this.boardMaquina, fila, columna)
             : this.tableroUsuario.atacar(this.boardUsuario, fila, columna);
-    
-        // Si la celda ya fue atacada, notificamos y salimos sin cambiar turno
+
         if (resultado === "Ya atacado") {
             alert("¡Ya has disparado en esa casilla!");
-            // Reactivar solo si es turno del usuario
             if (this.turnoUsuario) {
                 this.toggleInteraccionTableroMaquina(true);
             }
             this.isProcessingShot = false;
             return;
         }
-    
+
         console.log(`🔹 ${this.turnoUsuario ? "Usuario" : "Máquina"} disparó a (${fila}, ${columna}): ${resultado}`);
-    
-        // Actualizamos la visualización de ambos tableros
+
         this.tableroUsuario.renderBoard(this.boardUsuario, "board-p1", 0);
         this.tableroMaquina.renderBoard(this.boardMaquina, "board-p2", 1);
-    
-        // Si el disparo falla, se cambia de turno
-        if (resultado === "❌ Agua") {
-            this.turnoUsuario = !this.turnoUsuario;
-        }
-    
-        // Al finalizar el proceso, habilitar o deshabilitar según el turno
+
         if (this.turnoUsuario) {
-            this.toggleInteraccionTableroMaquina(true);
-        } else {
-            this.toggleInteraccionTableroMaquina(false);
+            if (resultado === "💥 Impacto!") {
+                this.puntaje += 10;
+                this.aciertos++;
+                this.ultimaCasillaImpacto = { fila, columna };
+            } else if (this.ultimaCasillaImpacto && this.esAdyacenteAImpactoAnterior(fila, columna)) {
+                this.puntaje -= 3;
+                this.fallos++;
+                this.ultimaCasillaImpacto = null;
+            } else {
+                this.puntaje -= 1;
+                this.fallos++;
+                this.ultimaCasillaImpacto = null;
+            }
         }
-        this.isProcessingShot = false;
-    
-        // Si es turno de la máquina, la máquina dispara automáticamente
-        if (!this.turnoUsuario) {
-            setTimeout(() => this.turnoMaquina(), 1000);
-        }
-    
-        if (this.verificarFinDelJuego()) {
+
+        if (this.turnoUsuario && this.verificarFinDelJuego()) {
             this.finalizarPartida();
+            return;
         }
-    }
+
+        if (resultado === "❌ Agua" || (this.turnoUsuario && this.esAdyacenteAImpactoAnterior(fila, columna))) {
+            this.turnoUsuario = false;
+            this.toggleInteraccionTableroMaquina(false);
+            this.isProcessingShot = false;
+            setTimeout(() => this.turnoMaquina(), 1000); // Llamada asíncrona a turnoMaquina
+        } else {
+            this.turnoUsuario = true;
+            this.toggleInteraccionTableroMaquina(true);
+            this.isProcessingShot = false;
+        }
+
+        console.log("Turno actual:", this.turnoUsuario ? "Usuario" : "Máquina");
+        console.log("isProcessingShot:", this.isProcessingShot);
+    }   
     
     turnoMaquina() {
+        this.isProcessingShot = true;
+        this.turnoUsuario = false;
         let fila, columna, cell;
+        let intentos = 0;
+        const maxIntentos = this.tableroUsuario.size ** 2;
+
         do {
             fila = Math.floor(Math.random() * this.tableroUsuario.size);
             columna = Math.floor(Math.random() * this.tableroUsuario.size);
-            cell = this.boardUsuario.find(cel => cel.row === fila && cel.col === columna);
-        } while (cell && (cell.status === "h" || cell.status === "mi")); // Asegura que no se dispare a celdas ya atacadas
-    
+            cell = this.boardUsuario.find(c => c.row === fila && c.col === columna);
+            intentos++;
+        } while (cell && (cell.status === "h" || cell.status === "mi") && intentos < maxIntentos);
+
+        if (!cell || intentos >= maxIntentos) {
+            console.warn("⚠️ La máquina no encontró una celda válida para disparar.");
+            this.isProcessingShot = false;
+            return;
+        }
+
         this.realizarDisparo(fila, columna);
+    }       
+
+    verificarFinDelJuego() {
+        return !this.boardMaquina.some(celda => celda.status === "ship");
     }
+    
+    finalizarPartida() {
+        alert(`🎉 ¡Juego terminado!\n\n✅ Aciertos: ${this.aciertos}\n❌ Fallos: ${this.fallos}\n🎯 Puntaje total: ${this.puntaje}`);
+    
+        // Enviar al backend
+        const datos = {
+            nick_name: localStorage.getItem("nickname") || "anon",
+            score: this.puntaje,
+            country_code: localStorage.getItem("country_code") || "co",
+        };
+    
+        fetch("http://127.0.0.1/score-recorder", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(datos)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("📤 Puntaje enviado al servidor:", data);
+        })
+        .catch(error => {
+            console.error("❌ Error al enviar puntaje:", error);
+        });
+    }
+    
 }
     
 const size = localStorage.getItem("boardSize") || 10; // Tamaño por defecto
