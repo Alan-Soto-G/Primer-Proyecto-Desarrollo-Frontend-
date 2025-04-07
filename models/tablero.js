@@ -1,8 +1,6 @@
 export class Tablero {
     constructor(size) {
         this.size = size;
-        this.filas = size;
-        this.columnas = size;
     }
 
     createBoard() {
@@ -10,114 +8,134 @@ export class Tablero {
         const boardP1 = [];
         const boardP2 = [];
         let cellId = 1;
-
+    
+        // Crear un arreglo plano con información de la fila y columna
         for (let row = 0; row < this.size; row++) {
-            const filaP1 = [];
-            const filaP2 = [];
             for (let col = 0; col < this.size; col++) {
                 const cellP1 = {
                     id: cellId,
                     row,
                     col,
-                    status: "~",
-                    visible: true,
+                    status: "w",       // w: water, ship: barco, hit: impacto, miss: fallado
+                    visible: true,     // Visible para jugador 1
                     ship: null,
                     player: "p1",
                 };
                 const cellP2 = {
-                    ...JSON.parse(JSON.stringify(cellP1)),
-                    visible: false,
+                    ...cellP1,
+                    id: cellId,        // Mismo id para la celda duplicada
+                    visible: true,    // Oculto para jugador 2
                     player: "p2",
                 };
-                filaP1.push(cellP1);
-                filaP2.push(cellP2);
+                boardP1.push(cellP1);
+                boardP2.push(cellP2);
                 cellId++;
             }
-            boardP1.push(filaP1);
-            boardP2.push(filaP2);
         }
 
         return { boardP1, boardP2 };
     }
 
-    colocarBarco(tablero, fila, columna, longitud, horizontal = true) {
-        if (horizontal && columna + longitud > this.columnas) return false;
-        if (!horizontal && fila + longitud > this.filas) return false;
+    colocarBarco(board, fila, columna, longitud, horizontal = true) {
+        // Validar que el barco quepa en el tablero
+        if (horizontal && (columna + longitud > this.size)) return false;
+        if (!horizontal && (fila + longitud > this.size)) return false;
 
+        // Verificar que las celdas estén libres (status === "w")
         for (let i = 0; i < longitud; i++) {
             const f = fila + (horizontal ? 0 : i);
             const c = columna + (horizontal ? i : 0);
-
-            if (tablero[f][c].status !== "~") return false;
+            const cell = board.find(cel => cel.row === f && cel.col === c);
+            if (!cell || cell.status !== "w") return false;
         }
 
+        // Colocar el barco actualizando las celdas correspondientes
         for (let i = 0; i < longitud; i++) {
             const f = fila + (horizontal ? 0 : i);
             const c = columna + (horizontal ? i : 0);
-
-            tablero[f][c].status = "ship";
-            tablero[f][c].ship = longitud;
+            const cell = board.find(cel => cel.row === f && cel.col === c);
+            if (cell) {
+                cell.status = "s";
+                cell.ship = longitud;
+            }
         }
-
         return true;
     }
 
-    atacar(fila, columna, tablero) {
-        const celda = tablero[fila][columna];
-
-        if (celda.status === "hit" || celda.status === "miss") {
+    atacar(board, fila, columna) {
+        const cell = board.find(cel => cel.row === fila && cel.col === columna);
+        if (!cell) return "Celda no existe";
+    
+        // Evitar disparar a celdas ya atacadas
+        if (cell.status === "h" || cell.status === "mi") {
             return "Ya atacado";
         }
-
-        if (celda.status === "ship") {
-            celda.status = "hit";
+        
+        // Si la celda contiene un barco, se marca como impacto ("h")
+        if (cell.status === "s") {
+            cell.status = "h";  // Se mostrará hit.gif en renderBoard
             return "💥 Impacto!";
         } else {
-            celda.status = "miss";
-            celda.ship = null;
+            // Si es agua, se marca como disparo fallido ("mi")
+            cell.status = "mi"; // Se mostrará missedShot.png en renderBoard
+            cell.ship = null;
             return "❌ Agua";
         }
-    }
-
-    renderBoard(board, containerId, playerOption) {
-        const container = document.getElementById(containerId);
-        if (!container) {
+    }     
+    
+    renderBoard(board, containerId, option) {
+        const boardContainer = document.getElementById(containerId);
+        if (!boardContainer) {
             console.error(`No se encontró el contenedor con id ${containerId}`);
             return;
         }
+        boardContainer.innerHTML = "";
+        boardContainer.style.display = "grid";
+        boardContainer.style.gridTemplateColumns = `repeat(${this.size}, minmax(25px, 1fr))`;
 
-        container.innerHTML = "";
-        container.style.display = "grid";
-        container.style.gridTemplateColumns = `repeat(${this.columnas}, 30px)`;
-        container.style.gridTemplateRows = `repeat(${this.filas}, 30px)`;
+        // Ordenar las celdas para renderizar de forma correcta (fila por fila)
+        board.sort((a, b) => {
+            if (a.row === b.row) return a.col - b.col;
+            return a.row - b.row;
+        });
 
-        for (let i = 0; i < this.filas; i++) {
-            for (let j = 0; j < this.columnas; j++) {
-                const cell = board[i][j];
-                const div = document.createElement("div");
-                div.classList.add("cell");
-                div.dataset.fila = i;
-                div.dataset.columna = j;
-
-                let image = "water.png";
-                let path = "/assets/shot/"; // ✅ corregido aquí
-
-                if (cell.status === "hit") {
+        board.forEach(cell => {
+            let image;
+            let path;
+            switch(cell.status) {
+                case "w": 
+                    path = "/assets/shot/";
+                    image = "water.png";
+                    break;
+                case "s":
+                    path = "/assets/ship/";
+                    image = "ship1.png";
+                    break;
+                case "h":
                     path = "/assets/shot/";
                     image = "hit.gif";
-                } else if (cell.status === "miss") {
+                    break;
+                default: // Aquí se asume que el único otro valor es "mi"
                     path = "/assets/shot/";
                     image = "missedShot.png";
-                } else if (cell.status === "ship") {
-                    path = "/assets/ship/";
-                    image = `ship${cell.ship || 1}.png`;
-                }
-
-                div.style.backgroundImage = `url('${path}${image}')`;
-                div.style.backgroundSize = "cover";
-
-                container.appendChild(div);
+            }            
+            // Dependiendo de la opción y jugador, renderizamos un botón o un div con imagen
+            if (option === 2 && cell.player === "p2") {
+                const button = document.createElement("button");
+                button.className = "cell";
+                button.innerHTML = `<img src="${path}${image}" alt="${cell.status}" data-id="${cell.id}">`;
+                boardContainer.appendChild(button);
+            } else if (option === 1) {
+                const div = document.createElement("div");
+                div.className = "cell-image";
+                div.innerHTML = `<img src="${path}${image}" alt="${cell.status}" data-id="${cell.id}">`;
+                boardContainer.appendChild(div);
+            } else {
+                const button = document.createElement("button");
+                button.className = "cell";
+                button.innerHTML = `<img src="${path}${image}" alt="${cell.status}" data-id="${cell.id}">`;
+                boardContainer.appendChild(button);
             }
-        }
+        });
     }
 }
