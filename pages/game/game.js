@@ -20,9 +20,12 @@ class Juego {
         this.puntaje = 0;
         this.ultimaCasillaImpacto = null;
 
-
         // Barcos definidos y orientación inicial
         this.barcos = [5, 4, 3, 3, 2, 2];
+
+        // Contadores de casillas con barcos restantes (cada tablero tiene 19 casillas)
+        this.remainingUserShips = 19;
+        this.remainingMachineShips = 19;
     }
 
     iniciar() {
@@ -87,47 +90,78 @@ class Juego {
 
         console.log(`🔹 ${this.turnoUsuario ? "Usuario" : "Máquina"} disparó a (${fila}, ${columna}): ${resultado}`);
 
+        // Actualizamos los tableros después del disparo
         this.tableroUsuario.renderBoard(this.boardUsuario, "board-p1", 0);
         this.tableroMaquina.renderBoard(this.boardMaquina, "board-p2", 1);
 
-        if (this.turnoUsuario) {
-            if (resultado === "💥 Impacto!") {
+        let disparoFallido = false;
+
+        // Si hay impacto, actualizamos el contador respectivo
+        if (resultado === "💥 Impacto!") {
+            if (this.turnoUsuario) {
                 this.puntaje += 10;
                 this.aciertos++;
+                this.remainingMachineShips--;
                 this.ultimaCasillaImpacto = { fila, columna };
-            } else if (this.ultimaCasillaImpacto && this.esAdyacenteAImpactoAnterior(fila, columna)) {
-                this.puntaje -= 3;
-                this.fallos++;
-                this.ultimaCasillaImpacto = null;
             } else {
-                this.puntaje -= 1;
-                this.fallos++;
-                this.ultimaCasillaImpacto = null;
+                // Disparo de la máquina: solo se disminuye el contador del usuario
+                this.remainingUserShips--;
             }
+        } else if (this.turnoUsuario && this.ultimaCasillaImpacto && this.esAdyacenteAImpactoAnterior(fila, columna)) {
+            // Penalización por disparo adyacente
+            this.puntaje -= 3;
+            this.fallos++;
+            this.ultimaCasillaImpacto = null;
+            disparoFallido = true;
+        } else if (this.turnoUsuario) {
+            // Penalización por disparo fallido
+            this.puntaje -= 1;
+            this.fallos++;
+            this.ultimaCasillaImpacto = null;
+            disparoFallido = true;
         }
 
-        if (this.turnoUsuario && this.verificarFinDelJuego()) {
+        // Verificamos si alguno de los jugadores se quedó sin barcos
+        if (this.verificarFinDelJuego()) {
             this.finalizarPartida();
             return;
         }
 
-        if (resultado === "❌ Agua" || (this.turnoUsuario && this.esAdyacenteAImpactoAnterior(fila, columna))) {
-            this.turnoUsuario = false;
-            this.toggleInteraccionTableroMaquina(false);
+        // Si el disparo fue "agua" o fallido (penalización), se cambia de turno:
+        if (resultado === "❌ Agua" || disparoFallido) {
+            // Cambiamos de turno de forma simétrica: si era del usuario, le toca a la máquina y viceversa.
+            this.turnoUsuario = !this.turnoUsuario;
+            this.toggleInteraccionTableroMaquina(this.turnoUsuario);
             this.isProcessingShot = false;
-            setTimeout(() => this.turnoMaquina(), 1000); // Llamada asíncrona a turnoMaquina
+            // Si la máquina tiene el turno, se llama automáticamente.
+            if (!this.turnoUsuario) {
+                setTimeout(() => this.turnoMaquina(), 1000);
+            }
         } else {
-            this.turnoUsuario = true;
-            this.toggleInteraccionTableroMaquina(true);
+            // Si fue un impacto, el jugador conserva el turno.
             this.isProcessingShot = false;
+            if (!this.turnoUsuario) {
+                // Si la máquina dio impacto, dispara nuevamente automáticamente.
+                setTimeout(() => this.turnoMaquina(), 1000);
+            } else {
+                // Si el usuario dio impacto, se habilita la interacción para seguir disparando.
+                this.toggleInteraccionTableroMaquina(true);
+            }
         }
 
         console.log("Turno actual:", this.turnoUsuario ? "Usuario" : "Máquina");
         console.log("isProcessingShot:", this.isProcessingShot);
     }   
     
+    esAdyacenteAImpactoAnterior(fila, columna) {
+        if (!this.ultimaCasillaImpacto) return false;
+        const deltaRow = Math.abs(fila - this.ultimaCasillaImpacto.fila);
+        const deltaCol = Math.abs(columna - this.ultimaCasillaImpacto.columna);
+        return deltaRow <= 1 && deltaCol <= 1;
+    }
+
     turnoMaquina() {
-        this.isProcessingShot = true;
+        // No se establece isProcessingShot en true aquí para permitir el disparo.
         this.turnoUsuario = false;
         let fila, columna, cell;
         let intentos = 0;
@@ -150,11 +184,18 @@ class Juego {
     }       
 
     verificarFinDelJuego() {
-        return !this.boardMaquina.some(celda => celda.status === "ship");
+        // Fin del juego si alguno de los contadores llega a 0
+        return this.remainingMachineShips === 0 || this.remainingUserShips === 0;
     }
     
     finalizarPartida() {
-        alert(`🎉 ¡Juego terminado!\n\n✅ Aciertos: ${this.aciertos}\n❌ Fallos: ${this.fallos}\n🎯 Puntaje total: ${this.puntaje}`);
+        let ganador = "";
+        if (this.remainingMachineShips === 0) {
+            ganador = "Usuario";
+        } else if (this.remainingUserShips === 0) {
+            ganador = "Máquina";
+        }
+        alert(`🎉 ¡Juego terminado!\n\nGanador: ${ganador}\n\n✅ Aciertos: ${this.aciertos}\n❌ Fallos: ${this.fallos}\n🎯 Puntaje total: ${this.puntaje}`);
     
         // Enviar al backend
         const datos = {
@@ -178,9 +219,40 @@ class Juego {
             console.error("❌ Error al enviar puntaje:", error);
         });
     }
+
+    async obtenerClima() {
+        const ciudad = localStorage.getItem("locationName");
+        if (!ciudad) {
+            console.error("❌ No se encontró una ciudad en localStorage.");
+            const weatherList = document.getElementById("weather-list");
+            weatherList.innerHTML = "<li>City: Not specified</li>";
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/weather?city=${ciudad}`);
+            if (!response.ok) {
+                throw new Error(`Error en la solicitud: ${response.statusText}`);
+            }
+            const weatherData = await response.json();
+    
+            const weatherList = document.getElementById("weather-list");
+            weatherList.innerHTML = `
+                <li>City: ${weatherData.city || "Unknown"}</li>
+                <li>Description: ${weatherData.description || "N/A"}</li>
+                <li><img src="${weatherData.icon || ""}" alt="weather icon"></li>
+                <li>Temperature: ${weatherData.temperature || "N/A"}</li>
+                <li>Wind Speed: ${weatherData.wind_speed || "N/A"}</li>
+            `;
+        } catch (error) {
+            console.error("❌ Error al obtener los datos del clima:", error);
+            const weatherList = document.getElementById("weather-list");
+            weatherList.innerHTML = "<li>City: Error fetching data</li>";
+        }
+    }
     
 }
-    
+obtenerClima()
 const size = localStorage.getItem("boardSize") || 10; // Tamaño por defecto
 const juego = new Juego(size);
 juego.iniciar();
