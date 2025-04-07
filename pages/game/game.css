@@ -9,8 +9,8 @@ body {
     overflow-x: hidden;
   }
   
-  /* NAVBAR */
-  nav {
+ /* NAVBAR */
+nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -73,7 +73,7 @@ body {
     min-width: 280px;
     max-width: 320px;
     color: #fff;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   }
   
   .ranking-panel h3 {
@@ -130,3 +130,60 @@ body {
     }
   }
   
+  /* CONTENEDOR DEL CLIMA */
+  #weather-container {
+    position: relative;
+    display: inline-block;
+    font-size: 0.9rem;
+    max-width: 200px;
+    color: white;
+  }
+  
+  #weather-summary {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 5px;
+  }
+  
+  #weather-summary img {
+    width: 30px;
+    height: auto;
+  }
+  
+  #weather-details {
+    display: none; /* Oculta los detalles inicialmente */
+    position: absolute;
+    top: 100%; /* Muestra el contenido debajo del resumen */
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    width: 250px;
+  }
+  
+  #weather-details ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  #weather-details li {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  #weather-details img {
+    width: 40px;
+    height: auto;
+  }
+  
+  /* Mostrar detalles al hacer clic */
+  #weather-container.active #weather-details {
+    display: block;
+  }
