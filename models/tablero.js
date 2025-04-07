@@ -24,7 +24,7 @@ export class Tablero {
                 const cellP2 = {
                     ...cellP1,
                     id: cellId,        // Mismo id para la celda duplicada
-                    visible: false,    // Oculto para jugador 2
+                    visible: true,    // Oculto para jugador 2
                     player: "p2",
                 };
                 boardP1.push(cellP1);
@@ -64,18 +64,23 @@ export class Tablero {
     atacar(board, fila, columna) {
         const cell = board.find(cel => cel.row === fila && cel.col === columna);
         if (!cell) return "Celda no existe";
-        if (cell.status === "hit" || cell.status === "miss") {
+    
+        // Evitar disparar a celdas ya atacadas
+        if (cell.status === "h" || cell.status === "mi") {
             return "Ya atacado";
         }
-        if (cell.status === "ship") {
-            cell.status = "h";
+        
+        // Si la celda contiene un barco, se marca como impacto ("h")
+        if (cell.status === "s") {
+            cell.status = "h";  // Se mostrará hit.gif en renderBoard
             return "💥 Impacto!";
         } else {
-            cell.status = "mi";
+            // Si es agua, se marca como disparo fallido ("mi")
+            cell.status = "mi"; // Se mostrará missedShot.png en renderBoard
             cell.ship = null;
             return "❌ Agua";
         }
-    }    
+    }     
     
     renderBoard(board, containerId, option) {
         const boardContainer = document.getElementById(containerId);
@@ -103,16 +108,16 @@ export class Tablero {
                     break;
                 case "s":
                     path = "/assets/ship/";
-                    image = cell.visible ? "ship1.png" : "water.png";
+                    image = "ship1.png";
                     break;
                 case "h":
                     path = "/assets/shot/";
                     image = "hit.gif";
                     break;
-                default:
+                default: // Aquí se asume que el único otro valor es "mi"
                     path = "/assets/shot/";
                     image = "missedShot.png";
-            }
+            }            
             // Dependiendo de la opción y jugador, renderizamos un botón o un div con imagen
             if (option === 2 && cell.player === "p2") {
                 const button = document.createElement("button");

@@ -14,6 +14,8 @@ let horizontal = true;
 // Inicializar con el valor por defecto al cargar la página
 const boardDefault = new Tablero(selectedValue);
 ({ boardP1: currentBoardP1, boardP2: currentBoardP2 } = boardDefault.createBoard());
+// Colocar barcos en el tablero enemigo automáticamente
+colocarBarcosAleatoriamente(currentBoardP2, boardDefault);
 boardDefault.renderBoard(currentBoardP1, "board-p1", 0);
 
 const buttonDownload = document.getElementById("downloadBtn");
@@ -61,6 +63,21 @@ function colocarBarcoUsuario(row, col) {
     }
 }
 
+// Método para colocar barcos automáticamente en un tablero dado
+function colocarBarcosAleatoriamente(board, tablero) {
+    // Utilizamos los barcos definidos para colocarlos de forma aleatoria
+    const barcos = [5, 4, 3, 3, 2, 2];
+    barcos.forEach(longitud => {
+        let colocado = false;
+        while (!colocado) {
+            const fila = Math.floor(Math.random() * tablero.size);
+            const columna = Math.floor(Math.random() * tablero.size);
+            const horizontal = Math.random() < 0.5;
+            colocado = tablero.colocarBarco(board, fila, columna, longitud, horizontal);
+        }
+    });
+}
+
 // Capturar clics en el tablero del usuario (colocación de barcos)
 const boardP1Elem = document.getElementById("board-p1");
 boardP1Elem.addEventListener("click", (event) => {
@@ -75,7 +92,7 @@ boardP1Elem.addEventListener("click", (event) => {
 
 // Listener para cambiar orientación al presionar la tecla "R"
 document.addEventListener("keydown", (event) => {
-    if (event.key.toLowerCase() === "r") {
+    if (event.key && event.key.toLowerCase() === "r") {
         horizontal = !horizontal;
         console.log(`↩️ Orientación cambiada a: ${horizontal ? "Horizontal" : "Vertical"}`);
     }

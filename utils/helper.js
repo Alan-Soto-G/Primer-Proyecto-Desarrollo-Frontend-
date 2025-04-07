@@ -4,7 +4,7 @@ export default class Helper {
             (res) => res.text()
         );
 
-        console.log(html);
+        //console.log(html);
         const container = document.getElementById("contenedor");
         if (!container) {
             throw new Error("El contenedor no existe en el DOM.");
