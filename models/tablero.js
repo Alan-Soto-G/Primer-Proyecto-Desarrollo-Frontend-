@@ -3,18 +3,18 @@ export class Tablero {
         this.size = size;
         this.filas = size;
         this.columnas = size;
-    }    
+    }
 
-    createBoard(size) {
+    createBoard() {
         console.log("✅ Tablero inicializado.");
         const boardP1 = [];
         const boardP2 = [];
         let cellId = 1;
 
-        for (let row = 0; row < size; row++) {
+        for (let row = 0; row < this.size; row++) {
             const filaP1 = [];
             const filaP2 = [];
-            for (let col = 0; col < size; col++) {
+            for (let col = 0; col < this.size; col++) {
                 const cellP1 = {
                     id: cellId,
                     row,
@@ -36,33 +36,34 @@ export class Tablero {
             boardP1.push(filaP1);
             boardP2.push(filaP2);
         }
+
         return { boardP1, boardP2 };
     }
 
     colocarBarco(tablero, fila, columna, longitud, horizontal = true) {
         if (horizontal && columna + longitud > this.columnas) return false;
         if (!horizontal && fila + longitud > this.filas) return false;
-    
+
         for (let i = 0; i < longitud; i++) {
             const f = fila + (horizontal ? 0 : i);
             const c = columna + (horizontal ? i : 0);
-    
-            if (tablero[f][c].status !== "~") return false;  // Ya ocupado
+
+            if (tablero[f][c].status !== "~") return false;
         }
-    
+
         for (let i = 0; i < longitud; i++) {
             const f = fila + (horizontal ? 0 : i);
             const c = columna + (horizontal ? i : 0);
-    
+
             tablero[f][c].status = "ship";
             tablero[f][c].ship = longitud;
         }
-    
-        return true;
-    }    
 
-    atacar(fila, columna) {
-        const celda = this.matriz[fila][columna];
+        return true;
+    }
+
+    atacar(fila, columna, tablero) {
+        const celda = tablero[fila][columna];
 
         if (celda.status === "hit" || celda.status === "miss") {
             return "Ya atacado";
@@ -72,14 +73,12 @@ export class Tablero {
             celda.status = "hit";
             return "💥 Impacto!";
         } else {
-            this.matriz[fila][columna] = {
-                status: "miss",
-                ship: null
-            };
+            celda.status = "miss";
+            celda.ship = null;
             return "❌ Agua";
         }
-    }    
-    
+    }
+
     renderBoard(board, containerId, playerOption) {
         const container = document.getElementById(containerId);
         if (!container) {
@@ -100,16 +99,18 @@ export class Tablero {
                 div.dataset.fila = i;
                 div.dataset.columna = j;
 
-                let path = "./assets/shot/";
                 let image = "water.png";
+                let path = "/assets/shot/"; // ✅ corregido aquí
 
-                if (cell.status === "ship") {
-                    path = "./assets/ship/";
-                    image = cell.visible ? `ship${cell.ship || 1}.png` : "water.png";
-                } else if (cell.status === "hit") {
-                    image = "explosion.png";
+                if (cell.status === "hit") {
+                    path = "/assets/shot/";
+                    image = "hit.gif";
                 } else if (cell.status === "miss") {
+                    path = "/assets/shot/";
                     image = "missedShot.png";
+                } else if (cell.status === "ship") {
+                    path = "/assets/ship/";
+                    image = `ship${cell.ship || 1}.png`;
                 }
 
                 div.style.backgroundImage = `url('${path}${image}')`;
