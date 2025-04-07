@@ -1,3 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background-image: url('/assets/images/3.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: white;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* NAVBAR */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(12, 12, 12, 0.7);
+  padding: 10px 30px;
+  color: #fff;
+  border-bottom: 2px solid #444;
+}
+
+nav h1 {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+#downloadBtn {
+  background-color: #e0a800;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+  font-weight: bold;
+}
+
+#downloadBtn:hover {
+  transform: scale(1.05);
+  background-color: #cf9a00;
+}
+
+
 #selectSize{
     position: relative;
     display: block;      /* Se comporta como bloque para centrarlo */
@@ -10,9 +56,16 @@
     text-align: center;
 }
 
-#containerConfig{
-    background-color: transparent;
-}
+#containerConfig {
+    display: flex;
+    justify-content: flex-start; /* El tablero crece, el panel se adapta */
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+    min-height: 100vh;
+    flex-wrap: nowrap;
+  }
+  
 #Location-name{
     position: relative;
     display: block;      /* Se comporta como bloque para centrarlo */
@@ -22,48 +75,198 @@
     outline: none;
     margin: 10px auto;   /* Centra horizontalmente */
     border-color: black;
+
+}
+
+/* PANEL DE CONTROLES */
+.controls-panel {
+    
+  backdrop-filter: blur(12px);
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 20px;
+  padding: 30px;
+  min-width: 300px;
+  max-width: 350px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-self: flex-start;
+  margin: 0; /* ✅ Elimina empujes fijos */
+  flex-shrink: 0; /* ✅ Evita que se encoja si el tablero es grande */
+  gap: 15px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* FORMULARIOS */
+.controls-panel select,
+.controls-panel input {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.controls-panel input::placeholder {
+  color: #aaa;
+}
+
+.custom-select option {
+  color: black;
+}
+
+/* BOTÓN DE INICIAR */
+.start-btn {
+  background-color: #337ab7;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.start-btn:hover {
+  background-color: #24567a;
+}
+
+button {
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* MODAL DE INSTRUCCIONES */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+.modal-instructions {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(10, 10, 10, 0.85);
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  z-index: 11;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+}
+
+.modal-instructions button {
+  margin-top: 15px;
+  background-color: #337ab7;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.modal-instructions button:hover {
+  background-color: #24567a;
 }
 
 
+/* RESPONSIVE */
+@media (max-width: 992px) {
+  #containerConfig {
+    flex-direction: column;
+    align-items: center;
+  }
 
+  .controls-panel {
+    width: 90%;
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Fondo que cubre toda la pantalla */
-.fondo-completo {
-    position: fixed; /* Fija el fondo en su lugar */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    min-height: 100vh; /* Asegura que cubra toda la altura de la ventana */
-    background-image: url('/assets/images/config.png.jpg'); /* Imagen de fondo */
-    background-size: cover; /* Escala la imagen para cubrir todo */
-    background-position: center; /* Centra la imagen */
-    background-repeat: no-repeat; /* Evita que la imagen se repita */
-    z-index: -1; /* Envía el fondo detrás de otros elementos */
 }
+
+/* SELECT PERSONALIZADO */
+.custom-select {
+  width: 250px;
+  position: relative;
+  font-family: Arial, sans-serif;
+}
+
+.select-selected {
+  background-color: #f1f1f1;
+  padding: 10px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+}
+
+.select-selected img {
+  width: 20px;
+  height: 15px;
+  margin-right: 10px;
+}
+
+.select-items {
+  position: absolute;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+}
+
+.select-items div {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.select-items div img {
+  width: 20px;
+  height: 15px;
+  margin-right: 10px;
+}
+/* RESPONSIVE DESIGN */
+@media (max-width: 992px) {
+    #containerConfig {
+      flex-direction: column; /* Cambia a diseño vertical en pantallas medianas */
+      align-items: center; /* Centra los elementos */
+      gap: 20px; /* Aumenta el espacio entre los elementos */
+    }
+  
+    .controls-panel {
+      margin-right: 0; /* Elimina el margen derecho en diseño vertical */
+      width: 90%; /* Asegura que el panel ocupe un ancho adecuado */
+    }
+  
+    .boards-container {
+      width: 100%; /* Asegura que el tablero se ajuste al ancho disponible */
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .controls-panel {
+      padding: 20px; /* Reduce el padding en pantallas pequeñas */
+      min-width: 250px; /* Ajusta el ancho mínimo */
+      max-width: 300px; /* Ajusta el ancho máximo */
+    }
+  
+    #containerConfig {
+      padding: 10px; /* Reduce el padding general */
+      gap: 15px; /* Ajusta el espacio entre los elementos */
+    }
+  
+    #downloadBtn {
+      width: 100%; /* Botón ocupa todo el ancho en pantallas pequeñas */
+      text-align: center;
+    }
+  
+    nav h1 {
+      font-size: 1.5rem; /* Ajusta el tamaño del título en pantallas pequeñas */
+    }
+  }
